@@ -54,11 +54,11 @@ public class StarvationTest extends DefaultTestCase {
 //            try {
 //                con2.setCatalog("mysql");//make sure connection is valid
 //            }catch (SQLException x) {
-//                Assert.assertFalse("2nd Connection is not valid:"+x.getMessage(),true);
+//                assertFalse("2nd Connection is not valid:"+x.getMessage(),true);
 //            }
-//            Assert.assertTrue("Connection 1 should be closed.",con1.isClosed()); //first connection should be closed
+//            assertTrue("Connection 1 should be closed.",con1.isClosed()); //first connection should be closed
 //        }catch (Exception x) {
-//            Assert.assertFalse("Connection got starved:"+x.getMessage(),true);
+//            assertFalse("Connection got starved:"+x.getMessage(),true);
 //        }finally {
 //            if (con2!=null) con2.close();
 //        }
@@ -82,7 +82,6 @@ public class StarvationTest extends DefaultTestCase {
         }finally {
             if (con2!=null) con2.close();
         }
-        con1.close();
     }
 
     @Test
@@ -105,6 +104,5 @@ public class StarvationTest extends DefaultTestCase {
         }finally {
             if (con2!=null) con2.close();
         }
-        con1.close();
     }
 }

@@ -54,7 +54,7 @@ public class PoolProperties implements PoolConfiguration, Cloneable, Serializabl
     private volatile String validationQuery;
     private volatile int validationQueryTimeout = -1;
     private volatile String validatorClassName;
-    private transient volatile Validator validator;
+    private volatile Validator validator;
     private volatile boolean testOnBorrow = false;
     private volatile boolean testOnReturn = false;
     private volatile boolean testWhileIdle = false;
@@ -773,16 +773,16 @@ public class PoolProperties implements PoolConfiguration, Cloneable, Serializabl
                 PoolProperties.class.getClassLoader(),
                 Thread.currentThread().getContextClassLoader()
             );
-            validator = validatorClass.getConstructor().newInstance();
+            validator = validatorClass.newInstance();
         } catch (ClassNotFoundException e) {
             log.warn("The class "+className+" cannot be found.", e);
         } catch (ClassCastException e) {
             log.warn("The class "+className+" does not implement the Validator interface.", e);
-        } catch (IllegalAccessException e) {
-            log.warn("The class "+className+" or its no-arg constructor are inaccessible.", e);
-        } catch (ReflectiveOperationException | IllegalArgumentException | SecurityException e) {
+        } catch (InstantiationException e) {
             log.warn("An object of class "+className+" cannot be instantiated. Make sure that "+
                      "it includes an implicit or explicit no-arg constructor.", e);
+        } catch (IllegalAccessException e) {
+            log.warn("The class "+className+" or its no-arg constructor are inaccessible.", e);
         }
     }
 
@@ -919,9 +919,8 @@ public class PoolProperties implements PoolConfiguration, Cloneable, Serializabl
         boolean timer = getTimeBetweenEvictionRunsMillis()>0;
         boolean result = timer && (isRemoveAbandoned() && getRemoveAbandonedTimeout()>0);
         result = result || (timer && getSuspectTimeout()>0);
-        result = result || (timer && isTestWhileIdle());
+        result = result || (timer && isTestWhileIdle() && getValidationQuery()!=null);
         result = result || (timer && getMinEvictableIdleTimeMillis()>0);
-        result = result || (timer && getMaxAge()>0);
         return result;
     }
 

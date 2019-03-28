@@ -52,16 +52,12 @@ echo Service will try to guess them from the registry.
 goto okJavaHome
 :gotJreHome
 if not exist "%JRE_HOME%\bin\java.exe" goto noJavaHome
+if not exist "%JRE_HOME%\bin\javaw.exe" goto noJavaHome
 goto okJavaHome
 :gotJdkHome
+if not exist "%JAVA_HOME%\jre\bin\java.exe" goto noJavaHome
+if not exist "%JAVA_HOME%\jre\bin\javaw.exe" goto noJavaHome
 if not exist "%JAVA_HOME%\bin\javac.exe" goto noJavaHome
-rem Java 9 has a different directory structure
-if exist "%JAVA_HOME%\jre\bin\java.exe" goto preJava9Layout
-if not exist "%JAVA_HOME%\bin\java.exe" goto noJavaHome
-if not "%JRE_HOME%" == "" goto okJavaHome
-set "JRE_HOME=%JAVA_HOME%"
-goto okJavaHome
-:preJava9Layout
 if not "%JRE_HOME%" == "" goto okJavaHome
 set "JRE_HOME=%JAVA_HOME%\jre"
 goto okJavaHome
@@ -80,19 +76,6 @@ set "EXECUTABLE=%CATALINA_HOME%\bin\tomcat@VERSION_MAJOR@.exe"
 rem Set default Service name
 set SERVICE_NAME=Tomcat@VERSION_MAJOR@
 set DISPLAYNAME=Apache Tomcat @VERSION_MAJOR_MINOR@ %SERVICE_NAME%
-
-rem Java 9 no longer supports the java.endorsed.dirs
-rem system property. Only try to use it if
-rem JAVA_ENDORSED_DIRS was explicitly set
-rem or CATALINA_HOME/endorsed exists.
-set ENDORSED_PROP=ignore.endorsed.dirs
-if "%JAVA_ENDORSED_DIRS%" == "" goto noEndorsedVar
-set ENDORSED_PROP=java.endorsed.dirs
-goto doneEndorsed
-:noEndorsedVar
-if not exist "%CATALINA_HOME%\endorsed" goto doneEndorsed
-set ENDORSED_PROP=java.endorsed.dirs
-:doneEndorsed
 
 if "x%1x" == "xx" goto displayUsage
 set SERVICE_CMD=%1
@@ -164,7 +147,7 @@ if "%JvmMs%" == "" set JvmMs=128
 if "%JvmMx%" == "" set JvmMx=256
 
 "%EXECUTABLE%" //IS//%SERVICE_NAME% ^
-    --Description "Apache Tomcat @VERSION@ Server - https://tomcat.apache.org/" ^
+    --Description "Apache Tomcat @VERSION@ Server - http://tomcat.apache.org/" ^
     --DisplayName "%DISPLAYNAME%" ^
     --Install "%EXECUTABLE%" ^
     --LogPath "%CATALINA_BASE%\logs" ^
@@ -180,8 +163,7 @@ if "%JvmMx%" == "" set JvmMx=256
     --StopClass org.apache.catalina.startup.Bootstrap ^
     --StartParams start ^
     --StopParams stop ^
-    --JvmOptions "-Dcatalina.home=%CATALINA_HOME%;-Dcatalina.base=%CATALINA_BASE%;-D%ENDORSED_PROP%=%CATALINA_HOME%\endorsed;-Djava.io.tmpdir=%CATALINA_BASE%\temp;-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager;-Djava.util.logging.config.file=%CATALINA_BASE%\conf\logging.properties;%JvmArgs%" ^
-    --JvmOptions9 "--add-opens=java.base/java.lang=ALL-UNNAMED#--add-opens=java.base/java.io=ALL-UNNAMED#--add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED" ^
+    --JvmOptions "-Dcatalina.home=%CATALINA_HOME%;-Dcatalina.base=%CATALINA_BASE%;-Djava.io.tmpdir=%CATALINA_BASE%\temp;-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager;-Djava.util.logging.config.file=%CATALINA_BASE%\conf\logging.properties;%JvmArgs%" ^
     --Startup "%SERVICE_STARTUP_MODE%" ^
     --JvmMs "%JvmMs%" ^
     --JvmMx "%JvmMx%"

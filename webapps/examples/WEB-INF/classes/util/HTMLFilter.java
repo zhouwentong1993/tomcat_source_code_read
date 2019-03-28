@@ -37,7 +37,7 @@ public final class HTMLFilter {
     public static String filter(String message) {
 
         if (message == null)
-            return null;
+            return (null);
 
         char content[] = new char[message.length()];
         message.getChars(0, message.length(), content, 0);
@@ -60,7 +60,8 @@ public final class HTMLFilter {
                 result.append(content[i]);
             }
         }
-        return result.toString();
+        return (result.toString());
+
     }
 
 

@@ -68,19 +68,8 @@ By default here is it's declaration:
         <url-pattern>/</url-pattern>
     </servlet-mapping>]]></source>
 
-<p>So by default, the default servlet is loaded at webapp startup and directory
-listings are disabled and debugging is turned off.</p>
-
-<p>If you need to change the DefaultServlet settings for an application you can
-override the default configuration by re-defining the DefaultServlet in
-<code>/WEB-INF/web.xml</code>. However, this will cause problems if you attempt
-to deploy the application on another container as the DefaultServlet class will
-not be recognised. You can work-around this problem by using the Tomcat specific
-<code>/WEB-INF/tomcat-web.xml</code> deployment descriptor. The format is
-identical to <code>/WEB-INF/web.xml</code>. It will override any default
-settings but not those in <code>/WEB-INF/web.xml</code>. Since it is Tomcat
-specific, it will only be processed when the application is deployed on
-Tomcat.</p>
+So by default, the default servlet is loaded at webapp startup and
+directory listings are disabled and debugging is turned off.
 </section>
 
 <section anchor="change" name="What can I change?">
@@ -177,10 +166,6 @@ Tomcat.</p>
   <property name="fileEncoding">
         File encoding to be used when reading static resources.
         [platform default]
-  </property>
-  <property name="useBomIfPresent">
-        If a static file contains a byte order mark (BOM), should this be used
-        to determine the file encoding in preference to fileEncoding. [true]
   </property>
   <property name="sendfileSize">
         If the connector used supports sendfile, this represents the minimal

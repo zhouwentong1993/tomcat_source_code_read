@@ -326,7 +326,7 @@
     </attributes>
 
     <p>See the <a href="../realm-howto.html#DataSourceRealm">
-    DataSource Realm How-To</a> for more information on setting up container
+    DataSource Realm HOW-TO</a> for more information on setting up container
     managed security using the DataSource Database Realm component.</p>
 
   </subsection>
@@ -454,15 +454,6 @@
         <p>A string specifying how aliases are to be dereferenced during
         search operations. The allowed values are "always", "never",
         "finding" and "searching". If not specified, "always" is used.</p>
-      </attribute>
-
-      <attribute name="forceDnHexEscape" required="false">
-        <p>A setting of <code>true</code> forces escaping in the String
-        representation of a distinguished name to use the <code>\nn</code> form.
-        This may avoid issues with realms using Active Directory which appears
-        to be more tolerant of optional escaping when the <code>\nn</code> form
-        is used. If not specified, the default of <code>false</code> will be
-        used.</p>
       </attribute>
 
       <attribute name="hostnameVerifierClassName" required="false">
@@ -891,7 +882,7 @@
 
     <p>JAASRealm is prototype for Tomcat of the JAAS-based J2EE authentication
     framework for J2EE v1.4, based on the <a
-    href="https://www.jcp.org/en/jsr/detail?id=196">JCP Specification Request
+    href="http://www.jcp.org/en/jsr/detail?id=196">JCP Specification Request
     196</a> to enhance container-managed security and promote 'pluggable'
     authentication mechanisms whose implementations would be
     container-independent.</p>
@@ -920,14 +911,10 @@
         one of those roles.</p>
       </attribute>
 
-      <attribute name="appName" required="false">
+      <attribute name="appName" required="true">
        <p>The name of the application as configured in your login configuration
        file
        (<a href="http://docs.oracle.com/javase/1.4.2/docs/guide/security/jaas/tutorials/LoginConfigFile.html">JAAS LoginConfig</a>).</p>
-       <p>If not specified <code>appName</code> is derived from the Container's
-       name it is placed in, for example <code>Catalina</code> or <code>ROOT</code>.
-       If the realm is not placed in any Container, the default is <code>Tomcat</code>.
-       </p>
       </attribute>
 
       <attribute name="userClassNames" required="true">
@@ -1002,8 +989,7 @@
     <code>Realm</code> element that defines the CombinedRealm. Authentication
     will be attempted against each <code>Realm</code> in the order they are
     listed. Authentication against any Realm will be sufficient to authenticate
-    the user. The authenticated user, and their associated roles, will be taken
-    from the first Realm that successfully authenticates the user.</p>
+    the user.</p>
 
     <p>See the <a href="../realm-howto.html">Container-Managed Security
     Guide</a> for more information on setting up container managed security
@@ -1129,32 +1115,6 @@
 
     <p>The NullRealm implementation supports the following additional
     attributes.</p>
-
-    <attributes>
-
-      <attribute name="transportGuaranteeRedirectStatus" required="false">
-        <p>The HTTP status code to use when the container needs to issue an HTTP
-           redirect to meet the requirements of a configured transport
-           guarantee. The provided status code is not validated. If not
-           specified, the default value of <code>302</code> is used.</p>
-      </attribute>
-
-    </attributes>
-
-  </subsection>
-
-  <subsection name="Authenticated User Realm - org.apache.catalina.realm.AuthenticatedUserRealm">
-
-    <p><strong>AuthenticatedUserRealm</strong> is intended for use with
-    Authenticator implementations (SSLAuthenticator, SpnegoAuthenticator) that
-    authenticate the user as well as obtain the user credentials. An
-    authenticated Principal is always created from the user name presented to
-    without further validation.</p>
-    <p><strong>Note:</strong> It is unsafe to use this Realm with Authenticator
-    implementations that do not validate the provided credentials.</p>
-
-    <p>The AuthenticatedUserRealm implementation supports the following
-    additional attributes.</p>
 
     <attributes>
 

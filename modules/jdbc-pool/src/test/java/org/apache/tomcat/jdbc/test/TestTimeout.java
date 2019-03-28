@@ -16,18 +16,17 @@
  */
 package org.apache.tomcat.jdbc.test;
 
-import java.sql.Connection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestTimeout extends DefaultTestCase {
 
+    AtomicInteger counter = new AtomicInteger(0);
+
     @Test
     public void testCheckoutTimeout() throws Exception {
-        Set<Connection> cons = new HashSet<>();
         try {
             this.datasource.getPoolProperties().setTestWhileIdle(true);
             this.datasource.getPoolProperties().setTestOnBorrow(false);
@@ -43,24 +42,20 @@ public class TestTimeout extends DefaultTestCase {
             System.out.println("About to test connection pool:"+datasource);
             for (int i = 0; i < 21; i++) {
                 long now = System.currentTimeMillis();
-                cons.add(this.datasource.getConnection());
+                this.datasource.getConnection();
                 long delta = System.currentTimeMillis()-now;
                 System.out.println("Got connection #"+i+" in "+delta+" ms.");
             }
-            Assert.fail();
+            Assert.assertTrue(false);
         } catch ( Exception x ) {
-            // Expected on 21st checkout
+            Assert.assertTrue(true);
         }finally {
             Thread.sleep(2000);
-        }
-        for (Connection c : cons) {
-            c.close();
         }
     }
 
     @Test
     public void testCheckoutTimeoutFair() throws Exception {
-        Set<Connection> cons = new HashSet<>();
         try {
             this.datasource.getPoolProperties().setFairQueue(true);
             this.datasource.getPoolProperties().setTestWhileIdle(true);
@@ -77,18 +72,15 @@ public class TestTimeout extends DefaultTestCase {
             System.out.println("About to test connection pool:"+datasource);
             for (int i = 0; i < 21; i++) {
                 long now = System.currentTimeMillis();
-                cons.add(this.datasource.getConnection());
+                this.datasource.getConnection();
                 long delta = System.currentTimeMillis()-now;
                 System.out.println("Got connection #"+i+" in "+delta+" ms.");
             }
-            Assert.fail();
+            Assert.assertTrue(false);
         } catch ( Exception x ) {
-            // Expected on 21st checkout
+            Assert.assertTrue(true);
         }finally {
             Thread.sleep(2000);
-        }
-        for (Connection c : cons) {
-            c.close();
         }
     }
 }

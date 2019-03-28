@@ -479,8 +479,7 @@ public class SlowQueryReport extends AbstractQueryReport  {
      * have never been updated, have a lastInvocation value of {@code 0}
      * which should be handled as the newest possible invocation.
      */
-    // Public for unit tests
-    public static class QueryStatsComparator implements Comparator<QueryStats> {
+    private static class QueryStatsComparator implements Comparator<QueryStats> {
 
         @Override
         public int compare(QueryStats stats1, QueryStats stats2) {

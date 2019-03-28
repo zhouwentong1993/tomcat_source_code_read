@@ -16,8 +16,10 @@
  */
 package org.apache.tomcat.jdbc.pool;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,74 +59,74 @@ public class ShouldForceReconnectTest {
 
         //connection previously connect with default
         configureDefault(con);
-        Assert.assertFalse(con.shouldForceReconnect(null, null));
+        assertFalse(con.shouldForceReconnect(null, null));
 
         configureDefault(con);
-        Assert.assertFalse(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
+        assertFalse(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
 
         configureDefault(con);
-        Assert.assertFalse(con.shouldForceReconnect(null,DEFAULT_PASSWD));
+        assertFalse(con.shouldForceReconnect(null,DEFAULT_PASSWD));
 
         configureDefault(con);
-        Assert.assertFalse(con.shouldForceReconnect(DEFAULT_USER, null));
+        assertFalse(con.shouldForceReconnect(DEFAULT_USER, null));
 
         configureDefault(con);
-        Assert.assertTrue(con.shouldForceReconnect(ALT_USER,ALT_PASSWD));
+        assertTrue(con.shouldForceReconnect(ALT_USER,ALT_PASSWD));
 
         configureDefault(con);
-        Assert.assertTrue(con.shouldForceReconnect(null,ALT_PASSWD));
+        assertTrue(con.shouldForceReconnect(null,ALT_PASSWD));
 
         configureDefault(con);
-        Assert.assertTrue(con.shouldForceReconnect(ALT_USER,null));
+        assertTrue(con.shouldForceReconnect(ALT_USER,null));
 
         //connection previously connect with alternate
         configureAlt(con);
-        Assert.assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
+        assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
 
         configureAlt(con);
-        Assert.assertTrue(con.shouldForceReconnect(null, null));
+        assertTrue(con.shouldForceReconnect(null, null));
 
         configureAlt(con);
-        Assert.assertTrue(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
+        assertTrue(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
 
         configureAlt(con);
-        Assert.assertTrue(con.shouldForceReconnect(null, DEFAULT_PASSWD));
+        assertTrue(con.shouldForceReconnect(null, DEFAULT_PASSWD));
 
         configureAlt(con);
-        Assert.assertTrue(con.shouldForceReconnect(DEFAULT_USER, null));
+        assertTrue(con.shouldForceReconnect(DEFAULT_USER, null));
 
         configureAlt(con);
-        Assert.assertTrue(con.shouldForceReconnect(null,ALT_PASSWD));
+        assertTrue(con.shouldForceReconnect(null,ALT_PASSWD));
 
         configureAlt(con);
-        Assert.assertTrue(con.shouldForceReconnect(ALT_USER,null));
+        assertTrue(con.shouldForceReconnect(ALT_USER,null));
 
         //test changes in username password
         configureDefault(con);
-        Assert.assertFalse(con.shouldForceReconnect(null, null));
-        Assert.assertTrue(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
-        Assert.assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
-        Assert.assertTrue(con.shouldForceReconnect(null, null));
+        assertFalse(con.shouldForceReconnect(null, null));
+        assertTrue(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
+        assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
+        assertTrue(con.shouldForceReconnect(null, null));
 
         configureDefault(con);
-        Assert.assertFalse(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
-        Assert.assertTrue(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
-        Assert.assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
-        Assert.assertTrue(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
+        assertFalse(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
+        assertTrue(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
+        assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
+        assertTrue(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
 
         configureAlt(con);
-        Assert.assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
-        Assert.assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
-        Assert.assertTrue(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
-        Assert.assertFalse(con.shouldForceReconnect(null, null));
-        Assert.assertTrue(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
+        assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
+        assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
+        assertTrue(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
+        assertFalse(con.shouldForceReconnect(null, null));
+        assertTrue(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
 
 
         configureAlt(con);
-        Assert.assertTrue(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
-        Assert.assertTrue(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
-        Assert.assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
-        Assert.assertTrue(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
+        assertTrue(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
+        assertTrue(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
+        assertFalse(con.shouldForceReconnect(ALT_USER, ALT_PASSWD));
+        assertTrue(con.shouldForceReconnect(DEFAULT_USER, DEFAULT_PASSWD));
 
     }
 

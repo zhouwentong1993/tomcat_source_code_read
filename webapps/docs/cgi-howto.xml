@@ -91,12 +91,6 @@ file affects all web applications. See
 <p>There are several servlet init parameters which can be used to
 configure the behaviour of the CGI servlet.</p>
 <ul>
-<li><strong>cgiMethods</strong> - Comma separated list of HTTP methods. Requests
-using one of these methods will be passed to the CGI script for the script to
-generate the response. The default value is <code>GET,POST</code>. Use
-<code>*</code> for the script to handle all requests regardless of method.
-Unless over-ridden by the configuration of this parameter, requests using HEAD,
-OPTIONS or TRACE will have handled by the superclass.</li>
 <li><strong>cgiPathPrefix</strong> - The CGI search path will start at
 the web application root directory + File.separator + this prefix.
 By default there is no value, which results in the web application root
@@ -104,7 +98,7 @@ directory being used as the search path. The recommended value is
 <code>WEB-INF/cgi</code></li>
 <li><strong>enableCmdLineArguments</strong> - Are command line parameters
 generated from the query string as per section 4.4 of 3875 RFC? The default is
-<code>false</code>.</li>
+<code>true</code>.</li>
 <li><strong>environment-variable-</strong> - An environment to be set for the
 execution environment of the CGI script. The name of variable is taken from the
 parameter name. To configure an environment variable named FOO, configure a
@@ -135,16 +129,18 @@ the reading of stderr to complete before terminating the CGI process. Default
 is <code>2000</code>.</li>
 </ul>
 
-<p>The CGI script executed depends on the configuration of the CGI Servlet and
-how the request is mapped to the CGI Servlet. The CGI search path starts at the
-web application root directory + File.separator + cgiPathPrefix. The
-<strong>pathInfo</strong> is then searched unless it is <code>null</code> - in
-which case the <strong>servletPath</strong> is searched.</p>
+<p>The name and path of the CGI script to search for in the CGI search path
+depends on how the Servlet has been mapped. If the <strong>pathInfo</strong> is
+<code>null</code>, the <strong>servletPath</strong> will be used. If the
+<strong>pathInfo</strong> is not <code>null</code> then the
+<strong>servletPath</strong> is appended to the CGI search path and the
+<strong>pathInfo</strong> is used.</p>
 
-<p>The search starts with the first path segment and expands one path segment
-at a time until no path segments are left (resulting in a 404) or a script is
-found. Any remaining path segments are passed to the script in the
-<strong>PATH_INFO</strong> environment variable.</p>
+<p>The search will start with the first path segment and expand one path segment
+at a time until no path segments are left (resulting in a 404) or a matching
+script is found in the CGI search path. Any remaining path segments will be
+passed to the CGI executable in the <strong>PATH_INFO</strong> environment
+variable.</p>
 
 </section>
 

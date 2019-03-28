@@ -36,7 +36,7 @@
 <section name="Introduction">
 
   <p>The <strong>JDBC Connection Pool <code>org.apache.tomcat.jdbc.pool</code></strong>
-  is a replacement or an alternative to the <a href="https://commons.apache.org/dbcp/">Apache Commons DBCP</a>
+  is a replacement or an alternative to the <a href="http://commons.apache.org/dbcp/">Apache Commons DBCP</a>
   connection pool.</p>
 
   <p>So why do we need a new connection pool?</p>
@@ -128,7 +128,7 @@
   </subsection>
   <subsection name="Inside the Apache Tomcat Container">
     <p>
-      The Tomcat Connection pool is configured as a resource described in <a href="http://tomcat.apache.org/tomcat-9.0-doc/jndi-datasource-examples-howto.html" target="_blank">The Tomcat JDBC documentation</a>
+      The Tomcat Connection pool is configured as a resource described in <a href="http://tomcat.apache.org/tomcat-8.0-doc/jndi-datasource-examples-howto.html" target="_blank">The Tomcat JDBC documentation</a>
       With the only difference being that you have to specify the <code>factory</code> attribute and set the value to
       <code>org.apache.tomcat.jdbc.pool.DataSourceFactory</code>
     </p>
@@ -335,7 +335,7 @@
     <attribute name="timeBetweenEvictionRunsMillis" required="false">
       <p>(int) The number of milliseconds to sleep between runs of the idle connection validation/cleaner thread.
          This value should not be set under 1 second. It dictates how often we check for idle, abandoned connections, and how often
-         we validate idle connections. This value will be overridden by <code>maxAge</code> if the latter is non-zero and lower.
+         we validate idle connections.
          The default value is <code>5000</code> (5 seconds). <br/>
       </p>
     </attribute>
@@ -463,22 +463,17 @@
     </attribute>
 
     <attribute name="maxAge" required="false">
-      <p>(long) Time in milliseconds to keep a connection before recreating it.
+      <p>(long) Time in milliseconds to keep this connection. This attribute
+         works both when returning connection and when borrowing connection.
          When a connection is borrowed from the pool, the pool will check to see
          if the <code>now - time-when-connected > maxAge</code> has been reached
          , and if so, it reconnects before borrow it. When a connection is
          returned to the pool, the pool will check to see if the
          <code>now - time-when-connected > maxAge</code> has been reached, and
-         if so, it tries to reconnect.
-         When a connection is idle and <code>timeBetweenEvictionRunsMillis</code> is
-         greater than zero, the pool will periodically check to see if the
-         <code>now - time-when-connected > maxAge</code> has been reached, and
-         if so, it tries to reconnect.
-         Setting <code>maxAge</code> to a value lower than <code>timeBetweenEvictionRunsMillis</code>
-         will override it (so idle connection validation/cleaning will run more frequently).
+         if so, it closes the connection rather than returning it to the pool.
          The default value is <code>0</code>, which implies that connections
          will be left open and no age check will be done upon borrowing from the
-         pool, returning the connection to the pool or when checking idle connections.</p>
+         pool and returning the connection to the pool.</p>
     </attribute>
 
     <attribute name="useEquals" required="false">
@@ -757,7 +752,7 @@
 </section>
 
 <section name="Code Example">
-  <p>Other examples of Tomcat configuration for JDBC usage can be found <a href="https://tomcat.apache.org/tomcat-9.0-doc/jndi-datasource-examples-howto.html">in the Tomcat documentation</a>. </p>
+  <p>Other examples of Tomcat configuration for JDBC usage can be found <a href="http://tomcat.apache.org/tomcat-8.0-doc/jndi-datasource-examples-howto.html">in the Tomcat documentation</a>. </p>
   <subsection name="Plain Ol' Java">
     <p>Here is a simple example of how to create and use a data source.</p>
 <source><![CDATA[  import java.sql.Connection;
@@ -964,7 +959,7 @@
 
 <section name="Building">
   <p>We build the JDBC pool code with 1.6, but it is backwards compatible down to 1.5 for runtime environment. For unit test, we use 1.6 and higher</p>
-  <p>Other examples of Tomcat configuration for JDBC usage can be found <a href="https://tomcat.apache.org/tomcat-9.0-doc/jndi-datasource-examples-howto.html">in the Tomcat documentation</a>. </p>
+  <p>Other examples of Tomcat configuration for JDBC usage can be found <a href="http://tomcat.apache.org/tomcat-8.0-doc/jndi-datasource-examples-howto.html">in the Tomcat documentation</a>. </p>
   <subsection name="Building from source">
     <p>Building is pretty simple. The pool has a dependency on <code>tomcat-juli.jar</code> and in case you want the <code>SlowQueryReportJmx</code></p>
 <source><![CDATA[  javac -classpath tomcat-juli.jar \
@@ -973,7 +968,7 @@
         org/apache/tomcat/jdbc/pool/interceptor/*.java \
         org/apache/tomcat/jdbc/pool/jmx/*.java]]></source>
     <p>
-       A build file can be found in the Tomcat <a href="https://svn.apache.org/viewvc/tomcat/trunk/modules/jdbc-pool/">source repository</a>.
+       A build file can be found in the Tomcat <a href="http://svn.apache.org/viewvc/tomcat/trunk/modules/jdbc-pool/">source repository</a>.
     </p>
     <p>
       As a convenience, a build file is also included where a simple build command will generate all files needed.

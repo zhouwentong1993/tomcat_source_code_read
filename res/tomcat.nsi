@@ -57,7 +57,6 @@ Var TomcatPortAjp
 Var TomcatMenuEntriesEnable
 Var TomcatShortcutAllUsers
 Var TomcatServiceName
-Var TomcatServiceNameAlreadyInstalled
 Var TomcatServiceDefaultName
 Var TomcatServiceFileName
 Var TomcatServiceManagerFileName
@@ -132,7 +131,7 @@ Var ServiceInstallLog
   LangString TEXT_CONF_SUBTITLE ${LANG_ENGLISH} "Tomcat basic configuration."
   LangString TEXT_CONF_PAGETITLE ${LANG_ENGLISH} ": Configuration Options"
 
-  LangString TEXT_JVM_LABEL1 ${LANG_ENGLISH} "Please select the path of a Java SE 8.0 or later JRE installed on your system."
+  LangString TEXT_JVM_LABEL1 ${LANG_ENGLISH} "Please select the path of a Java SE 7.0 or later JRE installed on your system."
   LangString TEXT_CONF_LABEL_PORT_SHUTDOWN ${LANG_ENGLISH} "Server Shutdown Port"
   LangString TEXT_CONF_LABEL_PORT_HTTP ${LANG_ENGLISH} "HTTP/1.1 Connector Port"
   LangString TEXT_CONF_LABEL_PORT_AJP ${LANG_ENGLISH} "AJP/1.3 Connector Port"
@@ -219,11 +218,11 @@ Section "Core" SecTomcatCore
   FileSeek $ServiceInstallLog 0 END
 
   InstallRetry:
-  FileWrite $ServiceInstallLog '"$INSTDIR\bin\$TomcatServiceFileName" //IS//$TomcatServiceName --DisplayName "Apache Tomcat @VERSION_MAJOR_MINOR@ $TomcatServiceName" --Description "Apache Tomcat @VERSION@ Server - https://tomcat.apache.org/" --LogPath "$INSTDIR\logs" --Install "$INSTDIR\bin\$TomcatServiceFileName" --Jvm "$JvmDll" --StartPath "$INSTDIR" --StopPath "$INSTDIR"'
+  FileWrite $ServiceInstallLog '"$INSTDIR\bin\$TomcatServiceFileName" //IS//$TomcatServiceName --DisplayName "Apache Tomcat @VERSION_MAJOR_MINOR@ $TomcatServiceName" --Description "Apache Tomcat @VERSION@ Server - http://tomcat.apache.org/" --LogPath "$INSTDIR\logs" --Install "$INSTDIR\bin\$TomcatServiceFileName" --Jvm "$JvmDll" --StartPath "$INSTDIR" --StopPath "$INSTDIR"'
   FileWrite $ServiceInstallLog "$\r$\n"
   ClearErrors
   DetailPrint "Installing $TomcatServiceName service"
-  nsExec::ExecToStack '"$INSTDIR\bin\$TomcatServiceFileName" //IS//$TomcatServiceName --DisplayName "Apache Tomcat @VERSION_MAJOR_MINOR@ $TomcatServiceName" --Description "Apache Tomcat @VERSION@ Server - https://tomcat.apache.org/" --LogPath "$INSTDIR\logs" --Install "$INSTDIR\bin\$TomcatServiceFileName" --Jvm "$JvmDll" --StartPath "$INSTDIR" --StopPath "$INSTDIR"'
+  nsExec::ExecToStack '"$INSTDIR\bin\$TomcatServiceFileName" //IS//$TomcatServiceName --DisplayName "Apache Tomcat @VERSION_MAJOR_MINOR@ $TomcatServiceName" --Description "Apache Tomcat @VERSION@ Server - http://tomcat.apache.org/" --LogPath "$INSTDIR\logs" --Install "$INSTDIR\bin\$TomcatServiceFileName" --Jvm "$JvmDll" --StartPath "$INSTDIR" --StopPath "$INSTDIR"'
   Pop $0
   Pop $1
   StrCmp $0 "0" InstallOk
@@ -322,8 +321,6 @@ Section -post
     FileWrite $ServiceInstallLog "$\r$\n"
     FileWrite $ServiceInstallLog '"$INSTDIR\bin\$TomcatServiceFileName" //US//$TomcatServiceName --JvmOptions "-Dcatalina.home=$INSTDIR#-Dcatalina.base=$INSTDIR#-Djava.io.tmpdir=$INSTDIR\temp#-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager#-Djava.util.logging.config.file=$INSTDIR\conf\logging.properties"'
     FileWrite $ServiceInstallLog "$\r$\n"
-    FileWrite $ServiceInstallLog '"$INSTDIR\bin\$TomcatServiceFileName" //US//$TomcatServiceName --JvmOptions9 "--add-opens=java.base/java.lang=ALL-UNNAMED#--add-opens=java.base/java.io=ALL-UNNAMED#--add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED"'
-    FileWrite $ServiceInstallLog "$\r$\n"
     FileWrite $ServiceInstallLog '"$INSTDIR\bin\$TomcatServiceFileName" //US//$TomcatServiceName --StdOutput auto --StdError auto --JvmMs 128 --JvmMx 256'
     FileWrite $ServiceInstallLog "$\r$\n"
     FileClose $ServiceInstallLog
@@ -332,7 +329,6 @@ Section -post
   DetailPrint "Configuring $TomcatServiceName service"
   nsExec::ExecToLog '"$INSTDIR\bin\$TomcatServiceFileName" //US//$TomcatServiceName --Classpath "$INSTDIR\bin\bootstrap.jar;$INSTDIR\bin\tomcat-juli.jar" --StartClass org.apache.catalina.startup.Bootstrap --StopClass org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop  --StartMode jvm --StopMode jvm'
   nsExec::ExecToLog '"$INSTDIR\bin\$TomcatServiceFileName" //US//$TomcatServiceName --JvmOptions "-Dcatalina.home=$INSTDIR#-Dcatalina.base=$INSTDIR#-Djava.io.tmpdir=$INSTDIR\temp#-Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager#-Djava.util.logging.config.file=$INSTDIR\conf\logging.properties"'
-  nsExec::ExecToLog '"$INSTDIR\bin\$TomcatServiceFileName" //US//$TomcatServiceName --JvmOptions9 "--add-opens=java.base/java.lang=ALL-UNNAMED#--add-opens=java.base/java.io=ALL-UNNAMED#--add-opens=java.rmi/sun.rmi.transport=ALL-UNNAMED"'
   nsExec::ExecToLog '"$INSTDIR\bin\$TomcatServiceFileName" //US//$TomcatServiceName --StdOutput auto --StdError auto --JvmMs 128 --JvmMx 256'
 
   ${If} $TomcatShortcutAllUsers == "1"
@@ -359,8 +355,6 @@ Section -post
                    "DisplayVersion" @VERSION@
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Apache Tomcat @VERSION_MAJOR_MINOR@ $TomcatServiceName" \
                    "DisplayIcon" "$\"$INSTDIR\tomcat.ico$\""
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Apache Tomcat @VERSION_MAJOR_MINOR@ $TomcatServiceName" \
-                   "Publisher" "The Apache Software Foundation"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Apache Tomcat @VERSION_MAJOR_MINOR@ $TomcatServiceName" \
                    "UninstallString" "$\"$INSTDIR\Uninstall.exe$\" -ServiceName=$\"$TomcatServiceName$\""
 
@@ -637,15 +631,6 @@ Function pageConfigurationLeave
     Goto exit
   ${EndIf}
 
-  ReadRegStr $TomcatServiceNameAlreadyInstalled HKLM "SYSTEM\CurrentControlSet\Services\$TomcatServiceName" \
-    "DisplayName"
-  ${If} $TomcatServiceNameAlreadyInstalled != ""
-    MessageBox MB_ICONEXCLAMATION|MB_OK 'A service with the given Service Name is already installed on this machine. \
-      Please choose another Service Name'
-    Abort "Config not right"
-    Goto exit
-  ${EndIf}
-
   Push $TomcatServiceName
   Call validateServiceName
   Pop $0
@@ -869,45 +854,25 @@ Function findJavaHome
   ExpandEnvStrings $0 "%PROGRAMW6432%"
   ${If} $0 != "%PROGRAMW6432%"
     SetRegView 64
-    ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\JRE" "CurrentVersion"
-    ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\JRE\$2" "JavaHome"
-    ReadRegStr $3 HKLM "SOFTWARE\JavaSoft\JRE\$2" "RuntimeLib"
+    ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
+    ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$2" "JavaHome"
+    ReadRegStr $3 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$2" "RuntimeLib"
 
     IfErrors 0 +2
     StrCpy $1 ""
     ClearErrors
-
-    ${If} $1 == ""
-      ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
-      ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$2" "JavaHome"
-      ReadRegStr $3 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$2" "RuntimeLib"
-
-      IfErrors 0 +2
-      StrCpy $1 ""
-      ClearErrors
-    ${EndIf}
   ${EndIf}
 
   ; If no 64-bit Java was found, look for 32-bit Java
   ${If} $1 == ""
     SetRegView 32
-    ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\JRE" "CurrentVersion"
-    ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\JRE\$2" "JavaHome"
-    ReadRegStr $3 HKLM "SOFTWARE\JavaSoft\JRE\$2" "RuntimeLib"
+    ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
+    ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$2" "JavaHome"
+    ReadRegStr $3 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$2" "RuntimeLib"
 
     IfErrors 0 +2
     StrCpy $1 ""
     ClearErrors
-
-    ${If} $1 == ""
-      ReadRegStr $2 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment" "CurrentVersion"
-      ReadRegStr $1 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$2" "JavaHome"
-      ReadRegStr $3 HKLM "SOFTWARE\JavaSoft\Java Runtime Environment\$2" "RuntimeLib"
-
-      IfErrors 0 +2
-      StrCpy $1 ""
-      ClearErrors
-    ${EndIf}
 
     ; If using 64-bit, go back to using 64-bit registry
     ${If} $0 != "%PROGRAMW6432%"
@@ -1121,7 +1086,7 @@ Function createShortcuts
   SetOutPath "$SMPROGRAMS\Apache Tomcat @VERSION_MAJOR_MINOR@ $TomcatServiceName"
 
   CreateShortCut "$SMPROGRAMS\Apache Tomcat @VERSION_MAJOR_MINOR@ $TomcatServiceName\Tomcat Home Page.lnk" \
-                 "https://tomcat.apache.org/"
+                 "http://tomcat.apache.org/"
 
   CreateShortCut "$SMPROGRAMS\Apache Tomcat @VERSION_MAJOR_MINOR@ $TomcatServiceName\Welcome.lnk" \
                  "http://127.0.0.1:$TomcatPortHttp/"

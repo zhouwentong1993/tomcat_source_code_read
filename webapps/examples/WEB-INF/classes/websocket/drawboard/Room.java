@@ -409,7 +409,7 @@ public final class Room {
      * Note: This means a player object is actually a join between Room and
      * Client.
      */
-    public static final class Player {
+    public final class Player {
 
         /**
          * The room to which this player belongs.

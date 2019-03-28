@@ -15,7 +15,7 @@
 
 
   This is excludes file for Apache RAT tool run by ASF Buildbot,
-  https://creadur.apache.org/rat/
+  http://creadur.apache.org/rat/
 
   The following files are excluded:
 
@@ -23,7 +23,7 @@
 
   - *.html files in documentation are generated from XML sources
 
-  - *.sha512 files are generated and cannot contain license
+  - *.md5, *.sha/*.sha1 files are generated and cannot contain license
 
   - *.manifest, MANIFEST.MF JAR manifest files cannot contain license
 
@@ -51,7 +51,7 @@
     (*.gif, *.jpg are also binary, but are automatically detected by RAT as
     ones, so no explicit configuration is needed)
 
-  - Markdown files for display in their GitHub UI
+  - Markdown files for display in ther GitHub UI
 
   - Temporary cache files used by Checkstle
 
@@ -63,7 +63,8 @@ output/build/webapps/docs/**/*.html
 output/dist/webapps/docs/**/*.html
 output/deployer/deployer-howto.html
 
-**/*.sha512
+**/*.md5
+**/*.sha1
 
 **/MANIFEST.MF
 **/*.manifest
@@ -71,7 +72,6 @@ output/deployer/deployer-howto.html
 output/dist/webapps/docs/*/package-list
 output/dist/webapps/docs/*/script.js
 
-output/dist/src/test/webapp/404.html
 output/dist/src/test/webapp/index.html.br
 output/dist/src/test/webapp/bug49nnn/bug49464-cp1252.txt
 output/dist/src/test/webapp/bug49nnn/bug49464-ibm850.txt
@@ -84,7 +84,6 @@ output/dist/src/test/webapp-fragments/WEB-INF/classes/*.txt
 output/dist/src/test/webresources/dir1/d1/d1-f1.txt
 output/dist/src/test/webresources/dir1/d2/d2-f1.txt
 output/dist/src/test/webresources/dir1/*.txt
-test/webapp/404.html
 test/webapp/index.html.br
 test/webapp/bug49nnn/bug49464-cp1252.txt
 test/webapp/bug49nnn/bug49464-ibm850.txt

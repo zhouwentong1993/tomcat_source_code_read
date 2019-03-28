@@ -17,9 +17,7 @@
 package org.apache.tomcat.jdbc.test;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -243,7 +241,7 @@ public class FairnessTest extends DefaultTestCase {
                     totalruntime+=(System.nanoTime()-start);
                 }
 
-            } catch (RuntimeException | SQLException | ExecutionException | InterruptedException x) {
+            } catch (Exception x) {
                 x.printStackTrace();
             } finally {
                 FairnessTest.this.latch.countDown();

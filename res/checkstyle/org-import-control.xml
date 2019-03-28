@@ -76,17 +76,11 @@
       <disallow pkg="javax.ejb"/>
       <disallow pkg="javax.persistence"/>
       <disallow pkg="javax.servlet"/>
-      <disallow pkg="org\.apache\.catalina(?!\.tribes).*" regex="true"/>
+      <disallow pkg="org.apache.catalina"/>
       <disallow pkg="org.apache.coyote"/>
       <disallow pkg="org.apache.naming"/>
-      <disallow pkg="org\.apache\.tomcat(?!\.util\.json).*" regex="true"/>
+      <disallow pkg="org.apache.tomcat"/>
       <allow pkg="org.apache.catalina.tribes"/>
-      <subpackage name="membership">
-        <subpackage name="cloud">
-          <allow class="org.apache.tomcat.util.net.jsse.PEMFile"/>
-          <allow class="org.apache.tomcat.util.json.JSONParser"/>
-        </subpackage>
-      </subpackage>
     </subpackage>
   </subpackage>
   <subpackage name="coyote">
@@ -139,9 +133,6 @@
       <subpackage name="dbcp2">
         <allow pkg="org.apache.tomcat.dbcp.dbcp2"/>
         <allow pkg="org.apache.tomcat.dbcp.pool2"/>
-        <subpackage name="managed">
-          <allow pkg="javax.transaction"/>
-        </subpackage>
       </subpackage>
       <subpackage name="pool2">
         <subpackage name="impl">

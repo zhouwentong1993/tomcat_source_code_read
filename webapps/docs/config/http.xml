@@ -145,9 +145,9 @@
 
     <attribute name="parseBodyMethods" required="false">
       <p>A comma-separated list of HTTP methods for which request
-      bodies using <code>application/x-www-form-urlencoded</code> will be parsed
-      for request parameters identically to POST. This is useful in RESTful
-      applications that want to support POST-style semantics for PUT requests.
+      bodies will be parsed for request parameters identically
+      to POST. This is useful in RESTful applications that want to
+      support POST-style semantics for PUT requests.
       Note that any setting other than <code>POST</code> causes Tomcat
       to behave in a way that goes against the intent of the servlet
       specification.
@@ -234,6 +234,14 @@
       SSL Connector or a non SSL connector that is receiving data from a
       SSL accelerator, like a crypto card, a SSL appliance or even a webserver.
       The default value is <code>false</code>.</p>
+    </attribute>
+
+    <attribute name="sendReasonPhrase" required="false">
+      <p>Set this attribute to <code>true</code> if you wish to have
+      a reason phrase in the response.
+      The default value is <code>false</code>.</p>
+      <p><strong>Note:</strong> This option is deprecated and will be removed
+      in Tomcat 9. The reason phrase will not be sent.</p>
     </attribute>
 
     <attribute name="URIEncoding" required="false">
@@ -326,7 +334,7 @@
     <attribute name="allowHostHeaderMismatch" required="false">
       <p>By default Tomcat will reject requests that specify a host in the
       request line but specify a different host in the host header. This
-      check can be disabled by setting this attribute to <code>true</code>. If
+      chekc can be disabled by setting this attribute to <code>false</code>. If
       not specified, the default is <code>false</code>.</p>
     </attribute>
 
@@ -359,7 +367,7 @@
       compression may be used.
       The default value is
       <code>
-      text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml
+      text/html,text/xml,text/plain,text/css,text/javascript,application/javascript
       </code>.
       </p>
     </attribute>
@@ -522,14 +530,13 @@
     </attribute>
 
     <attribute name="minSpareThreads" required="false">
-      <p>The minimum number of threads always kept running.  This includes both
-      active and idle threads. If not specified, the default of <code>10</code>
-      is used. If an executor is associated with this connector, this attribute
-      is ignored as the connector will execute tasks using the executor rather
-      than an internal thread pool. Note that if an executor is configured any
-      value set for this attribute will be recorded correctly but it will be
-      reported (e.g. via JMX) as <code>-1</code> to make clear that it is not
-      used.</p>
+      <p>The minimum number of threads always kept running. If not specified,
+      the default of <code>10</code> is used. If an executor is associated
+      with this connector, this attribute is ignored as the connector will
+      execute tasks using the executor rather than an internal thread pool. Note
+      that if an executor is configured any value set for this attribute will be
+      recorded correctly but it will be reported (e.g. via JMX) as
+      <code>-1</code> to make clear that it is not used.</p>
     </attribute>
 
     <attribute name="noCompressionUserAgents" required="false">
@@ -556,33 +563,8 @@
       (i.e. the header name is not a token) this setting determines if the
       request will be rejected with a 400 response (<code>true</code>) or if the
       illegal header be ignored (<code>false</code>). The default value is
-      <code>true</code> which will cause the request to be rejected.</p>
-    </attribute>
-
-    <attribute name="relaxedPathChars" required="false">
-      <p>The <a href="https://tools.ietf.org/rfc/rfc7230.txt">HTTP/1.1
-      specification</a> requires that certain characters are %nn encoded when
-      used in URI paths. Unfortunately, many user agents including all the major
-      browsers are not compliant with this specification and use these
-      characters in unencoded form. To prevent Tomcat rejecting such requests,
-      this attribute may be used to specify the additional characters to allow.
-      If not specified, no additional characters will be allowed. The value may
-      be any combination of the following characters:
-      <code>&quot; &lt; &gt; [ \ ] ^ ` { | }</code> . Any other characters
-      present in the value will be ignored.</p>
-    </attribute>
-
-    <attribute name="relaxedQueryChars" required="false">
-      <p>The <a href="https://tools.ietf.org/rfc/rfc7230.txt">HTTP/1.1
-      specification</a> requires that certain characters are %nn encoded when
-      used in URI query strings. Unfortunately, many user agents including all
-      the major browsers are not compliant with this specification and use these
-      characters in unencoded form. To prevent Tomcat rejecting such requests,
-      this attribute may be used to specify the additional characters to allow.
-      If not specified, no additional characters will be allowed. The value may
-      be any combination of the following characters:
-      <code>&quot; &lt; &gt; [ \ ] ^ ` { | }</code> . Any other characters
-      present in the value will be ignored.</p>
+      <code>false</code> which will cause the request to be processed but the
+      illegal header will be ignored.</p>
     </attribute>
 
     <attribute name="restrictedUserAgents" required="false">
@@ -638,15 +620,6 @@
       recorded correctly but it will be reported (e.g. via JMX) as
       <code>-1</code> to make clear that it is not used.</p>
     </attribute>
-
-    <attribute name="throwOnFailure" required="false">
-      <p>If the Connector experiences an Exception during a Lifecycle transition
-      should the Exception be rethrown or logged? If not specified, the default
-      of <code>false</code> will be used. Note that the default can be changed
-      by the <code>org.apache.catalina.startup.EXIT_ON_INIT_FAILURE</code>
-      system property.</p>
-    </attribute>
-
   </attributes>
 
   </subsection>
@@ -868,16 +841,6 @@
         can decide to keep it or let it be GC'd. Use this option when the
         command line <code>org.apache.tomcat.util.net.NioSelectorShared</code>
         value is set to false. Default value is <code>-1</code> (unlimited).</p>
-      </attribute>
-
-      <attribute name="useInheritedChannel" required="false">
-        <p>(bool)Defines if this connector should inherit an inetd/systemd network socket.
-        Only one connector can inherit a network socket. This can option can be
-        used to automatcially start Tomcat once a connection request is made to
-        the systemd super daemon's port.
-        The default value is <code>false</code>. See the JavaDoc
-        for the <code>java.nio.channels.spi.SelectorProvider</code> class for
-        more details.</p>
       </attribute>
 
       <attribute name="command-line-options" required="false">
@@ -1114,7 +1077,7 @@
   directed the original request.</p>
 
   <p>For more information, see the
-  <a href="../proxy-howto.html">Proxy Support How-To</a>.</p>
+  <a href="../proxy-howto.html">Proxy Support HOW-TO</a>.</p>
 
   </subsection>
 
@@ -1159,7 +1122,7 @@
   configuration attributes in the <strong>Connector</strong>.</p>
 
   <p>For more information, see the
-  <a href="../ssl-howto.html">SSL Configuration How-To</a>.</p>
+  <a href="../ssl-howto.html">SSL Configuration HOW-TO</a>.</p>
 
   </subsection>
 
@@ -1169,17 +1132,17 @@
 
   <attributes>
 
-    <attribute name="certificateRevocationListFile" required="false">
+    <attribute name="certificateRevocationFile" required="false">
       <p>Name of the file that contains the concatenated certificate revocation
       lists for the certificate authorities. The format is PEM-encoded. If not
       defined, client certificates will not be checked against a certificate
       revocation list (unless an OpenSSL based connector is used and
-      <strong>certificateRevocationListPath</strong> is defined). Relative paths
+      <strong>certificateRevocationPath</strong> is defined). Relative paths
       will be resolved against <code>$CATALINA_BASE</code>. JSSE based
       connectors may also specify a URL for this attribute.</p>
     </attribute>
 
-    <attribute name="certificateRevocationListPath" required="false">
+    <attribute name="certificateRevocationPath" required="false">
       <p>OpenSSL only.</p>
       <p>Name of the directory that contains the certificate revocation lists
       for the certificate authorities. The format is PEM-encoded. Relative paths
@@ -1255,7 +1218,8 @@
     <attribute name="honorCipherOrder" required="false">
       <p>Set to <code>true</code> to enforce the server's cipher order
       (from the <code>ciphers</code> setting) instead of allowing
-      the client to choose the cipher. The default is <code>false</code>.</p>
+      the client to choose the cipher. The default is <code>false</code>.
+      Use of this feature requires Java 8 or later.</p>
     </attribute>
 
     <attribute name="hostName" required="false">
@@ -1287,15 +1251,13 @@
       This should be a list of any combination of the following:
       </p>
       <ul><li>SSLv2Hello</li><li>SSLv3</li><li>TLSv1</li><li>TLSv1.1</li>
-      <li>TLSv1.2</li><li>TLSv1.3</li><li>all</li></ul>
+      <li>TLSv1.2</li><li>all</li></ul>
       <p>Each token in the list can be prefixed with a plus sign ("+")
       or a minus sign ("-"). A plus sign adds the protocol, a minus sign
       removes it form the current list. The list is built starting from
       an empty list.</p>
       <p>The token <code>all</code> is an alias for
-      <code>SSLv2Hello,TLSv1,TLSv1.1,TLSv1.2,TLSv1.3</code>.</p>
-      <p>Note that <code>TLSv1.3</code> is only supported for JSSE when using a
-      JVM that implements <code>TLSv1.3</code>.</p>
+      <code>SSLv2Hello,TLSv1,TLSv1.1,TLSv1.2</code>.</p>
       <p>Note that <code>SSLv2Hello</code> will be ignored for OpenSSL based
       secure connectors. If more than one protocol is specified for an OpenSSL
       based secure connector it will always support <code>SSLv2Hello</code>. If a
@@ -1318,12 +1280,14 @@
     </attribute>
 
     <attribute name="sessionCacheSize" required="false">
+      <p>JSSE only.</p>
       <p>The number of SSL sessions to maintain in the session cache. Use 0 to
       specify an unlimited cache size. If not specified, a default of 0 is
       used.</p>
     </attribute>
 
     <attribute name="sessionTimeout" required="false">
+      <p>JSSE only.</p>
       <p>The time, in seconds, after the creation of an SSL session that it will
       timeout. Use 0 to specify an unlimited timeout. If not specified, a
       default of 86400 (24 hours) is used.</p>
@@ -1384,7 +1348,7 @@
       <code>javax.net.ssl.trustStoreProvider</code> system property. If
       that property is null, the value of <code>keystoreProvider</code> is used
       as the default. If neither this attribute, the default system property nor
-      <code>keystoreProvider</code> is set, the list of registered providers is
+      <code>keystoreProvider</code>is set, the list of registered providers is
       traversed in preference order and the first provider that supports the
       <code>truststoreType</code> is used.
       </p>
@@ -1468,10 +1432,8 @@
       that is running Tomcat. If your <code>keystoreType</code> doesn't need a
       file use <code>""</code> (empty string) or <code>NONE</code> for this
       parameter.  Relative paths will be resolved against
-      <code>$CATALINA_BASE</code>.  A URI may also be used for this attribute.
-      When using a domain keystore (<code>keystoreType</code> of
-      <code>DKS</code>), this parameter should be the URI to the domain
-      keystore.</p>
+      <code>$CATALINA_BASE</code>.  A URL may also be used for this attribute.
+      </p>
     </attribute>
 
     <attribute name="certificateKeystorePassword" required="false">
@@ -1588,7 +1550,7 @@
     </attribute>
 
     <attribute name="crlFile" required="false">
-      <p>This is an alias for the <code>certificateRevocationListFile</code>
+      <p>This is an alias for the <code>certificateRevocationFile</code>
       attribute of the default
       <a href="#SSL_Support_-_SSLHostConfig">SSLHostConfig</a> element.</p>
     </attribute>
@@ -1744,13 +1706,13 @@
     </attribute>
 
     <attribute name="SSLCARevocationFile" required="false">
-      <p>This is an alias for the <code>certificateRevocationListFile</code>
+      <p>This is an alias for the <code>certificateRevocationFile</code>
       attribute of the default
       <a href="#SSL_Support_-_SSLHostConfig">SSLHostConfig</a> element.</p>
     </attribute>
 
     <attribute name="SSLCARevocationPath" required="false">
-      <p>This is an alias for the <code>certificateRevocationListPath</code>
+      <p>This is an alias for the <code>certificateRevocationPath</code>
       attribute of the default
       <a href="#SSL_Support_-_SSLHostConfig">SSLHostConfig</a> element.</p>
     </attribute>

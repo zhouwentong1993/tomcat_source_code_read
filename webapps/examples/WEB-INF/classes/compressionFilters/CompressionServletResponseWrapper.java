@@ -229,7 +229,8 @@ public class CompressionServletResponseWrapper
             System.out.println("stream is set to "+stream+" in getOutputStream");
         }
 
-        return stream;
+        return (stream);
+
     }
 
     /**
@@ -243,7 +244,7 @@ public class CompressionServletResponseWrapper
     public PrintWriter getWriter() throws IOException {
 
         if (writer != null)
-            return writer;
+            return (writer);
 
         if (stream != null)
             throw new IllegalStateException("getOutputStream() has already been called for this response");
@@ -256,9 +257,15 @@ public class CompressionServletResponseWrapper
         if (debug > 1) {
             System.out.println("character encoding is " + charEnc);
         }
-        writer = new PrintWriter(new OutputStreamWriter(stream, charEnc));
+        // HttpServletResponse.getCharacterEncoding() shouldn't return null
+        // according the spec, so feel free to remove that "if"
+        if (charEnc != null) {
+            writer = new PrintWriter(new OutputStreamWriter(stream, charEnc));
+        } else {
+            writer = new PrintWriter(stream);
+        }
 
-        return writer;
+        return (writer);
     }
 
     @Override

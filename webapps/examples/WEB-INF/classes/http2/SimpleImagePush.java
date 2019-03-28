@@ -23,7 +23,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.PushBuilder;
+
+import org.apache.catalina.servlet4preview.http.PushBuilder;
 
 public class SimpleImagePush extends HttpServlet {
 
@@ -37,7 +38,9 @@ public class SimpleImagePush extends HttpServlet {
         resp.setContentType("text/html");
         PrintWriter pw = resp.getWriter();
 
-        PushBuilder pb = req.newPushBuilder();
+        PushBuilder pb = ((org.apache.catalina.servlet4preview.http.HttpServletRequest)
+                req).newPushBuilder();
+
         if (pb != null) {
             pb.path("servlets/images/code.gif");
             pb.push();

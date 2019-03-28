@@ -36,7 +36,7 @@ import org.apache.tomcat.jdbc.test.driver.Driver;
 public class JmxPasswordTest extends DefaultTestCase{
     public static final String password = "password";
     public static final String username = "username";
-    public ObjectName oname = null;
+    public static ObjectName oname = null;
 
     @Before
     public void setUp() throws Exception {

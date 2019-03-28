@@ -17,9 +17,7 @@
 package org.apache.tomcat.jdbc.test;
 
 import java.sql.Connection;
-import java.sql.Statement;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import org.apache.tomcat.jdbc.pool.ConnectionPool;
@@ -32,11 +30,11 @@ public class TestException extends DefaultTestCase {
     public void testException() throws Exception {
         datasource.getPoolProperties().setJdbcInterceptors(TestInterceptor.class.getName());
         Connection con = datasource.getConnection();
-        try (Statement s = con.createStatement()){
-        } catch (Exception x) {
-            Assert.fail();
+        try {
+            con.createStatement();
+        }catch (Exception x) {
+            // Ignore
         }
-        con.close();
     }
 
 
@@ -44,7 +42,7 @@ public class TestException extends DefaultTestCase {
 
         @Override
         public void reset(ConnectionPool parent, PooledConnection con) {
-            // NO-OP
+            // TODO Auto-generated method stub
         }
     }
 }

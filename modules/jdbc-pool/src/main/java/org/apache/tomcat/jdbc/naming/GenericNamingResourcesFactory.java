@@ -63,7 +63,8 @@ public class GenericNamingResourcesFactory implements ObjectFactory {
             ClassLoaderUtil.loadClass(
                 type,
                 GenericNamingResourcesFactory.class.getClassLoader(),
-                Thread.currentThread().getContextClassLoader()).getConstructor().newInstance();
+                Thread.currentThread().getContextClassLoader())
+            .newInstance();
 
         while (refs.hasMoreElements()) {
             RefAddr addr = refs.nextElement();
@@ -119,7 +120,7 @@ public class GenericNamingResourcesFactory implements ObjectFactory {
                     if ("java.lang.Integer".equals(paramType.getName())
                             || "int".equals(paramType.getName())) {
                         try {
-                            params[0] = Integer.valueOf(value);
+                            params[0] = new Integer(value);
                         } catch (NumberFormatException ex) {
                             ok = false;
                         }
@@ -127,7 +128,7 @@ public class GenericNamingResourcesFactory implements ObjectFactory {
                     }else if ("java.lang.Long".equals(paramType.getName())
                                 || "long".equals(paramType.getName())) {
                             try {
-                                params[0] = Long.valueOf(value);
+                                params[0] = new Long(value);
                             } catch (NumberFormatException ex) {
                                 ok = false;
                             }

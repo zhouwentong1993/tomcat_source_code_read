@@ -50,7 +50,7 @@
   unpacked contents, as described in the Servlet Specification (version
   2.2 or later).  For more information about web application archives,
   you can download the
-  <a href="https://wiki.apache.org/tomcat/Specifications">Servlet
+  <a href="http://wiki.apache.org/tomcat/Specifications">Servlet
   Specification</a>, and review the Tomcat
   <a href="../appdev/index.html">Application Developer's Guide</a>.</p>
 
@@ -193,11 +193,7 @@
   server.xml file.</b> This is because it makes modifying the
   <strong>Context</strong> configuration more invasive since the main
   <code>conf/server.xml</code> file cannot be reloaded without restarting
-  Tomcat. Default <strong>Context</strong> elements (see below) will also
-  <strong>overwrite</strong> the configuration of any &lt;Context&gt; elements
-  placed directly in server.xml. To prevent this, the <code>override</code>
-  attribute of the &lt;Context&gt; element defined in server.xml should be set
-  to <code>true</code>.</p>
+  Tomcat.</p>
 
   <p>Individual <strong>Context</strong> elements may be explicitly defined:
   </p>
@@ -273,24 +269,6 @@
         The default is <code>false</code></p>
       </attribute>
 
-      <attribute name="allowMultipleLeadingForwardSlashInPath" required="false">
-        <p>Tomcat normalises sequences of multiple <code>/</code> characters in
-        a URI to a single <code>/</code>. This is for consistencuy with the
-        behaviour of file systems as URIs are often translated to file system
-        paths. As a result, the return value of
-        <code>HttpServletRequest#getContextPath()</code> is expected to start
-        with multiple <code>/</code> characters for some URIs. This will cause
-        problems if this value is used directly with
-        <code>HttpServletResponse#sendRedirect()</code> as redirect paths that
-        start with <code>//</code> are treated as protocol relative redirects.
-        To avoid potential issues, Tomcat will collapse multiple leading
-        <code>/</code> characters at the start of the return value for
-        <code>HttpServletRequest#getContextPath()</code> to a single
-        <code>/</code>. This attribute has a default value of <code>false</code>
-        which enables the collapsing of multiple <code>/</code> characters. To
-        disable this behaviour, set this attribute to <code>true</code>.</p>
-      </attribute>
-
       <attribute name="altDDName" required="false">
         <p>The absolute path to the alternative deployment descriptor for this
         context. This overrides the default deployment descriptor located at
@@ -334,13 +312,6 @@
         is the default).  Set to <code>false</code> if you want to disable
         the use of cookies for session identifier communication, and rely
         only on URL rewriting by the application.</p>
-      </attribute>
-
-      <attribute name="createUploadTargets" required="false">
-        <p>Set to <code>true</code> if Tomcat should attempt to create the
-        temporary upload location specified in the <code>MultipartConfig</code>
-        for a Servlet if the location does not already exist. If not specified,
-        the default value of <code>false</code> will be used.</p>
       </attribute>
 
       <attribute name="crossContext" required="false">
@@ -450,7 +421,7 @@
         resource that is not protected by a security constraint, if the
         authenticator supports preemptive authentication (the standard
         authenticators provided with Tomcat do) then the user&apos; credentials
-        will be processed. If not specified, the default of <code>false</code> is
+        will be processed. If not specified, the default of <code>false</code>is
         used.
         </p>
       </attribute>
@@ -647,23 +618,23 @@
 
       <attribute name="xmlBlockExternal" required="false">
         <p>If the value of this flag is <code>true</code>, the parsing of
-        <code>web.xml</code>, <code>web-fragment.xml</code>,
-        <code>tomcat-web.xml</code>, <code>*.tld</code>, <code>*.jspx</code>,
-        <code>*.tagx</code> and <code>tagPlugins.xml</code> files for this web
-        application will not permit external entities to be loaded. If not
-        specified, the default value of <code>true</code> will be used.</p>
+        <code>web.xml</code>, <code>web-fragment.xml</code>, <code>*.tld</code>,
+        <code>*.jspx</code>, <code>*.tagx</code> and <code>tagPlugins.xml</code>
+        files for this web application will not permit external entities to be
+        loaded. If not specified, the default value of <code>true</code> will
+        be used.</p>
       </attribute>
 
       <attribute name="xmlNamespaceAware" required="false">
         <p>If the value of this flag is <code>true</code>, the parsing of
-        <code>web.xml</code>, <code>web-fragment.xml</code> and
-        <code>tomcat-web.xml</code> files for this web application will be
-        namespace-aware. Note that <code>*.tld</code>, <code>*.jspx</code> and
-        <code>*.tagx</code> files are always parsed using a namespace-aware
-        parser and that the <code>tagPlugins.xml</code> file (if any) is never
-        parsed using a namespace-aware parser. Note also that if you turn this
-        flag on, you should probably also turn <code>xmlValidation</code> on. If
-        the <code>org.apache.catalina.STRICT_SERVLET_COMPLIANCE</code>
+        <code>web.xml</code> and <code>web-fragment.xml</code> files for this
+        web application will be namespace-aware. Note that <code>*.tld</code>,
+        <code>*.jspx</code> and <code>*.tagx</code> files are always parsed
+        using a namespace-aware parser and that the <code>tagPlugins.xml</code>
+        file (if any) is never parsed using a namespace-aware parser. Note also
+        that if you turn this flag on, you should probably also turn
+        <code>xmlValidation</code> on. If the
+        <code>org.apache.catalina.STRICT_SERVLET_COMPLIANCE</code>
         <a href="systemprops.html">system property</a> is set to
         <code>true</code>, the default value of this attribute will be
         <code>true</code>, else the default value will be <code>false</code>.
@@ -673,9 +644,8 @@
 
       <attribute name="xmlValidation" required="false">
         <p>If the value of this flag is <code>true</code>, the parsing of
-        <code>web.xml</code>, <code>web-fragment.xml</code> and
-        <code>tomcat-web.xml</code> files for this web application will use a
-        validating parser. If the
+        <code>web.xml</code> and <code>web-fragment.xml</code> files for this
+        web application will use a validating parser. If the
         <code>org.apache.catalina.STRICT_SERVLET_COMPLIANCE</code>
         <a href="systemprops.html">system property</a> is set to
         <code>true</code>, the default value of this attribute will be
@@ -718,7 +688,7 @@
 
         <p>Please note that setting this to <code>true</code> has some side
         effects, including the disabling of JSP reloading in a running server:
-        see <a href="https://bz.apache.org/bugzilla/show_bug.cgi?id=37668">
+        see <a href="http://bz.apache.org/bugzilla/show_bug.cgi?id=37668">
         Bugzilla 37668</a>.</p>
 
         <p>Please note that setting this flag to true in applications that are
@@ -738,18 +708,6 @@
         keep-alive timer thread will stop on its own once the keep-alives all
         expire however, on a busy system that might not happen for some time. If
         not specified, the default value of <code>true</code> will be used.</p>
-      </attribute>
-
-      <attribute name="clearReferencesObjectStreamClassCaches" required="false">
-        <p>If <code>true</code>, when the web application is stopped Tomcat
-        looks for <code>SoftReference</code>s to classes loaded by the web
-        application in the <code>ObjectStreamClass</code> class used for
-        serialization and clears any <code>SoftReference</code>s it finds. This
-        feature uses reflection to identify the <code>SoftReference</code>s and
-        therefore requires that the command line option
-        <code>-XaddExports:java.base/java.io=ALL-UNNAMED</code> is set
-        when running on Java 9 and above. If not specified, the default value of
-        <code>true</code> will be used.</p>
       </attribute>
 
       <attribute name="clearReferencesRmiTargets" required="false">
@@ -781,13 +739,6 @@
         application. Unlike standard threads, timer threads can be stopped
         safely although there may still be side-effects for the application. If
         not specified, the default value of <code>false</code> will be used.</p>
-      </attribute>
-
-      <attribute name="clearReferencesThreadLocals" required="false">
-        <p>If <code>true</code>, Tomcat attempts to clear
-        <code>java.lang.ThreadLocal</code> variables that have been populated
-        with classes loaded by the web application. If not specified, the
-        default value of <code>true</code> will be used.</p>
       </attribute>
 
       <attribute name="copyXML" required="false">
@@ -827,13 +778,6 @@
         <code>server.xml</code> and that the <code>threadRenewalDelay</code>
         property of the <code>Executor</code> be &gt;=0. If not specified, the
         default value of <code>true</code> will be used.</p>
-      </attribute>
-
-      <attribute name="skipMemoryLeakChecksOnJvmShutdown" required="false">
-        <p>If <code>true</code>, Tomcat will not perform the usual memory leak
-        checks when the web application is stopped if that web application is
-        stopped as part of a JVM shutdown. If not specified, the default value
-        of <code>false</code> will be used.</p>
       </attribute>
 
       <attribute name="unloadDelay" required="false">
@@ -979,10 +923,6 @@
         to establish default mappings (such as mapping the <code>*.jsp</code>
         extension to the corresponding JSP servlet), and other standard
         features that apply to all web applications.</li>
-    <li>The web application properties listed in the
-        <code>/WEB-INF/tomcat-web.xml</code> resource for this web application
-        will be processed (if this resource exists), taking precedence over the
-        defaults.</li>
     <li>The web application properties listed in the
         <code>/WEB-INF/web.xml</code> resource for this web application
         will be processed (if this resource exists).</li>
@@ -1219,14 +1159,10 @@
         it is no longer required. This is intended to speed up clean-up of
         resources that would otherwise happen as part of garbage collection.
         This attribute is ignored if the <code>singleton</code> attribute is
-        false.</p>
-        <p>For <code>javax.sql.DataSource</code> and
-        <code>javax.sql.XADataSource</code> resources that implement
-        <code>AutoCloseable</code> such as Apache Commons DBCP 2 and the default
-        Apache Tomcat connection pool, this attribute is defaults to
-        <code>close</code>. This may be disabled by setting the attribute to the
-        empty string. For all other resource types no default is defined and no
-        close method will be called by default.</p>
+        false. If not specified, no default is defined and no close method will
+        be called.</p>
+        <p>For Apache Commons DBCP and Apache Tomcat JDBC connection pools
+        you can use <code>closeMethod="close"</code>.</p>
       </attribute>
 
       <attribute name="description" required="false">
@@ -1337,7 +1273,7 @@
     <p>Shared Data Source Example:</p>
     <p><strong>Warning:</strong> This feature works only if the global DataSource
 supports <code>getConnection(username, password)</code> method.
-<a href="https://commons.apache.org/dbcp/">Apache Commons DBCP 2</a> pool that
+<a href="http://commons.apache.org/dbcp/">Apache Commons DBCP</a> pool that
 Tomcat uses by default does not support it. See its Javadoc for
 <code>BasicDataSource</code> class.
 <a href="../jdbc-pool.html">Apache Tomcat JDBC pool</a> does support it,

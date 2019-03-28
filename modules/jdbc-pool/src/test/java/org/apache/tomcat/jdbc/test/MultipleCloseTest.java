@@ -61,11 +61,9 @@ public class MultipleCloseTest extends DefaultTestCase {
         Assert.assertTrue(con1.isClosed());
 
         // Open a new connection (This will re-use the previous pooled connection)
-        Connection con2 = datasource.getConnection();
+        datasource.getConnection();
 
         // A connection, once closed, should stay closed
         Assert.assertTrue(con1.isClosed());
-
-        con2.close();
     }
 }

@@ -239,9 +239,8 @@
       <p>The APR Lifecycle Listener is not stable if compiled on Solaris using
       gcc. If using the APR/native connector on Solaris, compile it with the
       Sun Studio compiler.</p>
-      <p>The JNI Library Loading Listener may be used to load native code. It should
-      only be used to load trusted libraries.</p>
-      <p>The Security Lifecycle Listener should be enabled and configured as appropriate.
+
+      <p>The Security Listener should be enabled and configured as appropriate.
       </p>
     </subsection>
 
@@ -301,6 +300,28 @@
       connectors to pass secure and non-secure requests to Tomcat. If the
       proxy uses AJP then the SSL attributes of the client connection are
       passed via the AJP protocol and separate connectors are not needed.</p>
+
+      <p>The <strong>sslEnabledProtocols</strong> attribute determines which
+      versions of the SSL/TLS protocol are used.  Since the POODLE attack in
+      2014, all SSL protocols are considered unsafe and a secure setting for
+      this attribute in a standalone Tomcat setup might be
+      <code>sslEnabledProtocols="TLSv1,TLSv1.1,TLSv1.2"</code></p>
+
+      <p>The <strong>ciphers</strong> attribute controls the ciphers used for
+      SSL connections. By default, the default ciphers for the JVM will be used.
+      This usually means that the weak export grade ciphers will be included in
+      the list of available ciphers. Secure environments will normally want to
+      configure a more limited set of ciphers.  This attribute accepts the
+      <a href="https://www.openssl.org/docs/apps/ciphers.html" target="_blank"
+         rel="nofollow">
+      OpenSSL syntax</a> for including/excluding cipher suites.
+      As of 2014-11-19, with standalone Tomcat 8 and Java 8, Forward Secrecy
+      can be achieved by specifying only TLS protocols using
+      the sslEnabledProtocols attribute (above) and excluding non-DH ciphers,
+      and weak/broken ciphers.  The
+      <a href="https://www.ssllabs.com/ssltest/index.html" target="_blank"
+         rel="nofollow">Qualys SSL/TLS test</a> is a useful tool for
+      configuring these settings.</p>
 
       <p>The <strong>tomcatAuthentication</strong> and
       <strong>tomcatAuthorization</strong> attributes are used with the
@@ -376,7 +397,7 @@
       context as required.</p>
 
       <p>Any administrative application should be protected by a
-      RemoteAddrValve (this Valve is also available as a Filter).
+      RemoteAddrValve. (Note that this Valve is also available as a Filter.)
       The <strong>allow</strong> attribute should be used to limit access to a
       set of known trusted hosts.</p>
 
@@ -392,7 +413,7 @@
       <p>Modify the values as required. Note that this will also change the version
       number reported in some of the management tools and may make it harder to
       determine the real version installed. The CATALINA_HOME/bin/version.bat|sh
-      script will still report the correct version number.</p>
+      script will still report the version number.</p>
 
       <p>The default ErrorReportValve can display stack traces and/or JSP
       source code to clients when an error occurs. To avoid this, custom error
@@ -435,11 +456,6 @@
       <p>The cluster implementation is written on the basis that a secure,
       trusted network is used for all of the cluster related network traffic. It
       is not safe to run a cluster on a insecure, untrusted network.</p>
-
-      <p>If you are operating on an untrusted network or would prefer to
-      exercise an over-abundance of caution, you can use the
-      <a href="config/cluster-interceptor.html#org.apache.catalina.tribes.group.interceptors.EncryptInterceptor_Attributes">EncryptInterceptor</a>
-      to encrypt traffic between nodes.</p>
     </subsection>
   </section>
 
@@ -467,9 +483,9 @@
   </section>
 
   <section name="web.xml">
-    <p>This applies to the default <code>conf/web.xml</code> file, the
-    <code>/WEB-INF/tomcat-web.xml</code> and the <code>/WEB-INF/web.xml</code>
-    files in web applications if they define the components mentioned here.</p>
+    <p>This applies to the default <code>conf/web.xml</code> file and
+    <code>WEB-INF/web.xml</code> files in web applications if they define
+    the components mentioned here.</p>
 
     <p>The <a href="default-servlet.html">DefaultServlet</a> is configured
     with <strong>readonly</strong> set to
@@ -496,7 +512,7 @@
     <p>Modify the values as required. Note that this will also change the version
     number reported in some of the management tools and may make it harder to
     determine the real version installed. The CATALINA_HOME/bin/version.bat|sh
-    script will still report the correct version number.
+    script will still report the version number.
     </p>
 
     <p>The CGI Servlet is disabled by default. If enabled, the debug

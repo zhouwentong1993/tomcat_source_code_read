@@ -57,11 +57,11 @@ public class BorrowWaitTest extends DefaultTestCase {
         long start = System.currentTimeMillis();
         try {
             Connection con2 = datasource.getConnection();
-            Assert.assertFalse("This should not happen, connection should be unavailable.",true);
+            assertFalse("This should not happen, connection should be unavailable.",true);
         }catch (SQLException x) {
             long delta = System.currentTimeMillis();
             boolean inrange = Math.abs(wait-delta) < 1000;
-            Assert.assertTrue("Connection should have been acquired within +/- 1 second.",true);
+            assertTrue("Connection should have been acquired within +/- 1 second.",true);
         }
         con.close();
         */

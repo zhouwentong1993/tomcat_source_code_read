@@ -46,13 +46,9 @@
       <p>Use this to add a property source, that will be invoked when <code>${parameter}</code>
          denoted parameters are found in the XML files that Tomcat parses.</p>
       <p>Property replacement from the specified property source on the JVM
-         system properties can also be done using the
-         <code>REPLACE_SYSTEM_PROPERTIES</code> system property.</p>
-    </property>
-    <property name="org.apache.tomcat.util.digester. REPLACE_SYSTEM_PROPERTIES">
-      <p>Set this boolean system property to <code>true</code> to cause
-         property replacement from the digester property source on the JVM
-         system properties.</p>
+         system properties can also be done by adding the
+         <code>org.apache.catalina.util.SystemPropertyReplacerListener</code>
+         listener as a Server listener in the container.</p>
     </property>
   </properties>
 
@@ -154,17 +150,10 @@
       <code>true</code> will be used.</p>
     </property>
 
-    <property name="org.apache.jasper.runtime. BodyContentImpl.BUFFER_SIZE">
-      <p>The size (in characters) to use when creating a tag buffer.</p>
-      <p>If not specified, the default value of
-      <code>org.apache.jasper.Constants.DEFAULT_TAG_BUFFER_SIZE</code> (512)
-      will be used.</p>
-    </property>
-
     <property name="org.apache.jasper.runtime. BodyContentImpl.LIMIT_BUFFER">
       <p>If <code>true</code>, any tag buffer that expands beyond
-      <code>org.apache.jasper.runtime.BodyContentImpl.BUFFER_SIZE</code> will be
-      destroyed and a new buffer created.</p>
+      <code>org.apache.jasper.Constants.DEFAULT_TAG_BUFFER_SIZE</code> will be
+      destroyed and a new buffer created of the default size.</p>
       <p>If not specified, the default value of <code>false</code> will be used.</p>
     </property>
 
@@ -218,7 +207,7 @@
     </property>
 
     <property name="org.apache.jasper.Constants. JSP_PACKAGE_NAME">
-      <p>The default package name for compiled JSPs.</p>
+      <p>The default package name for compiled jsp pages.</p>
       <p>If not specified, the default value of <code>org.apache.jsp</code>
       will be used.</p>
     </property>
@@ -474,7 +463,6 @@
          <li>too many headers, too many parameters (hitting
            <code>maxHeaderCount</code> or <code>maxParameterCount</code> limits
            of a <a href="http.html">connector</a>).</li>
-         <li>invalid host names</li>
          </ul>
          <p>Other errors triggered by invalid input data may be added to this
          system in later versions.</p>
@@ -553,6 +541,14 @@
       <p>The default value is <code>false</code>.</p>
     </property>
 
+    <property name="org.apache.tomcat. websocket.STREAMS_DROP_EMPTY_MESSAGES">
+      <p>If <code>true</code>, streams provided to the user (writer and output
+      stream) will not send an empty message when flushing and there is no
+      data to flush, or when it is closed without having been used (for
+      example if an error occurs).</p>
+      <p>The default value is <code>false</code>.</p>
+    </property>
+
   </properties>
 
 </section>
@@ -560,6 +556,17 @@
 <section name="Other">
 
   <properties>
+
+    <property
+    name="org.apache.coyote. USE_CUSTOM_STATUS_MSG_IN_HEADER"><p>If this is
+      <code>true</code>, custom HTTP status messages will be used within HTTP
+      headers. If a custom message is specified that is not valid for use in an
+      HTTP header (as defined by RFC2616) then the custom message will be
+      ignored and the default message used.</p>
+      <p>If not specified, the default value of <code>false</code> will be used.</p>
+      <p><strong>Note:</strong> This option is deprecated and will be removed
+      in Tomcat 9. The reason phrase will not be sent.</p>
+    </property>
 
     <property name="catalina.useNaming">
       <p>If this is <code>false</code> it will override the
@@ -572,7 +579,7 @@
       <code>javax.sql.DataSource</code>. If not specified the default of
       <code>org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory</code> is used
       which is a package renamed (to avoid conflicts) copy of
-      <a href="https://commons.apache.org/dbcp">Apache Commons DBCP 2</a>.</p>
+      <a href="http://commons.apache.org/dbcp">Apache Commons DBCP</a>.</p>
     </property>
 
     <property name="javax.mail.Session.Factory">
@@ -588,11 +595,7 @@
     </property>
 
     <property name="catalina.config">
-      <p>The location from which to load the catalina.properties configuration
-      file. This may be an absolute URL, a relative (to the current working
-      directory) URL or an alternative file name in which case Tomcat will
-      attempt to load the file from the default location of
-      <code>$CATALINA_BASE/conf/</code>.</p>
+      <p>The URL for the catalina.properties configuration file.</p>
     </property>
 
     <property name="tomcat.util.buf.StringCache.byte.enabled">
@@ -642,11 +645,8 @@
 
     <property name="org.apache.catalina.startup. EXIT_ON_INIT_FAILURE">
       <p>If <code>true</code>, the server will exit if an exception happens
-      during the server initialization phase. To support this feature, this
-      system property is used as the default for the
-      <strong>throwOnFailure</strong> attribute of a Connector.</p>
-      <p>If not specified, the default value of <code>false</code> will be
-      used.</p>
+         during the server initialization phase.</p>
+      <p>If not specified, the default value of <code>false</code> will be used.</p>
     </property>
 
     <property name="org.apache.catalina.startup. RealmRuleSet.MAX_NESTED_REALM_LEVELS">
@@ -659,6 +659,16 @@
       <p>The NestedCredentialHandler allows nested CredentialHandlers. This
       property controls the maximum permitted number of levels of nesting.</p>
       <p>If not specified, the default value of <code>3</code> will be used.</p>
+    </property>
+
+    <property name="tomcat.util.http.parser.HttpParser. requestTargetAllow">
+      <p>A string comprised of characters the server should allow even when they are not encoded.
+      These characters would normally result in a 400 status.</p>
+      <p>The acceptable characters for this property are: <code>|</code>, <code>{</code>
+      , and <code>}</code></p>
+      <p><strong>WARNING</strong>: Use of this option will expose the server to CVE-2016-6816.
+      </p>
+      <p>If not specified, the default value of <code>null</code> will be used.</p>
     </property>
 
   </properties>

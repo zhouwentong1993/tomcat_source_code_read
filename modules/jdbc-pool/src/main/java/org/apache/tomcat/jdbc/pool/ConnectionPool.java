@@ -295,7 +295,6 @@ public class ConnectionPool {
         //fetch previously cached interceptor proxy - one per connection
         JdbcInterceptor handler = con.getHandler();
         if (handler==null) {
-            if (jmxPool != null) con.createMBean();
             //build the proxy handler
             handler = new ProxyConnection(this,con,getPoolProperties().isUseEquals());
             //set up the interceptor chain
@@ -303,7 +302,7 @@ public class ConnectionPool {
             for (int i=proxies.length-1; i>=0; i--) {
                 try {
                     //create a new instance
-                    JdbcInterceptor interceptor = proxies[i].getInterceptorClass().getConstructor().newInstance();
+                    JdbcInterceptor interceptor = proxies[i].getInterceptorClass().newInstance();
                     //configure properties
                     interceptor.setProperties(proxies[i].getProperties());
                     //setup the chain
@@ -387,8 +386,8 @@ public class ConnectionPool {
         }
 
         /* release all idle connections */
-        BlockingQueue<PooledConnection> pool = (!idle.isEmpty())?idle:(force?busy:idle);
-        while (!pool.isEmpty()) {
+        BlockingQueue<PooledConnection> pool = (idle.size()>0)?idle:(force?busy:idle);
+        while (pool.size()>0) {
             try {
                 //retrieve the next connection
                 PooledConnection con = pool.poll(1000, TimeUnit.MILLISECONDS);
@@ -399,7 +398,7 @@ public class ConnectionPool {
                         release(con);
                     else
                         abandon(con);
-                    if (!pool.isEmpty()) {
+                    if (pool.size()>0) {
                         con = pool.poll(1000, TimeUnit.MILLISECONDS);
                     } else {
                         break;
@@ -410,13 +409,13 @@ public class ConnectionPool {
                     Thread.currentThread().interrupt();
                 }
             }
-            if (pool.isEmpty() && force && pool!=busy) pool = busy;
+            if (pool.size()==0 && force && pool!=busy) pool = busy;
         }
         if (this.getPoolProperties().isJmxEnabled()) this.jmxPool = null;
         PoolProperties.InterceptorDefinition[] proxies = getPoolProperties().getJdbcInterceptorsAsArray();
         for (int i=0; i<proxies.length; i++) {
             try {
-                JdbcInterceptor interceptor = proxies[i].getInterceptorClass().getConstructor().newInstance();
+                JdbcInterceptor interceptor = proxies[i].getInterceptorClass().newInstance();
                 interceptor.setProperties(proxies[i].getProperties());
                 interceptor.poolClosed(this);
             }catch (Exception x) {
@@ -463,7 +462,7 @@ public class ConnectionPool {
                 if (log.isDebugEnabled()) {
                     log.debug("Creating interceptor instance of class:"+proxies[i].getInterceptorClass());
                 }
-                JdbcInterceptor interceptor = proxies[i].getInterceptorClass().getConstructor().newInstance();
+                JdbcInterceptor interceptor = proxies[i].getInterceptorClass().newInstance();
                 interceptor.setProperties(proxies[i].getProperties());
                 interceptor.poolStarted(this);
             }catch (Exception x) {
@@ -523,11 +522,6 @@ public class ConnectionPool {
         if (properties.getMaxIdle()<properties.getMinIdle()) {
             log.warn("maxIdle is smaller than minIdle, setting maxIdle to: "+properties.getMinIdle());
             properties.setMaxIdle(properties.getMinIdle());
-        }
-        if (properties.getMaxAge()>0 && properties.isPoolSweeperEnabled() &&
-                properties.getTimeBetweenEvictionRunsMillis()>properties.getMaxAge()) {
-            log.warn("timeBetweenEvictionRunsMillis is larger than maxAge, setting timeBetweenEvictionRunsMillis to: " + properties.getMaxAge());
-            properties.setTimeBetweenEvictionRunsMillis((int)properties.getMaxAge());
         }
     }
 
@@ -627,10 +621,7 @@ public class ConnectionPool {
         // we could have threads stuck in idle.poll(timeout) that will never be
         // notified
         if (waitcount.get() > 0) {
-            if (!idle.offer(create(true))) {
-                log.warn("Failed to add a new connection to the pool after releasing a connection " +
-                        "when at least one thread was waiting for a connection.");
-            }
+            idle.offer(create(true));
         }
     }
 
@@ -829,9 +820,10 @@ public class ConnectionPool {
             try {
                 con.reconnect();
                 reconnectedCount.incrementAndGet();
-                int validationMode = isInitNewConnections() ?
-                        PooledConnection.VALIDATE_INIT:
-                        PooledConnection.VALIDATE_BORROW;
+                int validationMode = getPoolProperties().isTestOnConnect() || getPoolProperties().getInitSQL()!=null ?
+                    PooledConnection.VALIDATE_INIT :
+                    PooledConnection.VALIDATE_BORROW;
+
                 if (con.validate(validationMode)) {
                     //set the timestamp
                     con.setTimestamp(now);
@@ -865,18 +857,6 @@ public class ConnectionPool {
             }
         }
     }
-
-    /**
-     * Returns whether new connections should be initialized by invoking
-     * {@link PooledConnection#validate(int)} with {@link PooledConnection#VALIDATE_INIT}.
-     *
-     * @return true if pool is either configured to test connections on connect or a non-NULL init
-     * SQL has been configured
-     */
-    private boolean isInitNewConnections() {
-        return getPoolProperties().isTestOnConnect() || getPoolProperties().getInitSQL()!=null;
-    }
-
     /**
      * Terminate the current transaction for the given connection.
      * @param con The connection
@@ -914,32 +894,8 @@ public class ConnectionPool {
         if (isClosed()) return true;
         if (!con.validate(action)) return true;
         if (!terminateTransaction(con)) return true;
-        return false;
-    }
-
-    /**
-     * Checks whether this connection has {@link PooledConnection#isMaxAgeExpired() expired} and tries to reconnect if it has.
-     * @param con PooledConnection
-     * @return true if the connection was either not expired or expired but reconnecting succeeded,
-     * false if reconnecting failed (either because a new connection could not be established or
-     * validating the newly created connection failed)
-     * @see PooledConnection#isMaxAgeExpired()
-     */
-    protected boolean reconnectIfExpired(PooledConnection con) {
-        if (con.isMaxAgeExpired()) {
-            try {
-                if (log.isDebugEnabled()) log.debug( "Connection ["+this+"] expired because of maxAge, trying to reconnect" );
-                con.reconnect();
-                reconnectedCount.incrementAndGet();
-                if ( isInitNewConnections() && !con.validate( PooledConnection.VALIDATE_INIT)) {
-                    return false;
-                }
-            } catch(Exception e) {
-                log.error("Failed to re-connect connection ["+this+"] that expired because of maxAge",e);
-                return false;
-            }
-        }
-        return true;
+        if (con.isMaxAgeExpired()) return true;
+        else return false;
     }
 
     /**
@@ -973,8 +929,7 @@ public class ConnectionPool {
                 }
                 if (busy.remove(con)) {
 
-                    if (!shouldClose(con,PooledConnection.VALIDATE_RETURN) && reconnectIfExpired(con)) {
-                        con.clearWarnings();
+                    if (!shouldClose(con,PooledConnection.VALIDATE_RETURN)) {
                         con.setStackTrace(null);
                         con.setTimestamp(System.currentTimeMillis());
                         if (((idle.size()>=poolProperties.getMaxIdle()) && !poolProperties.isPoolSweeperEnabled()) || (!idle.offer(con))) {
@@ -1020,7 +975,7 @@ public class ConnectionPool {
      */
     public void checkAbandoned() {
         try {
-            if (busy.isEmpty()) return;
+            if (busy.size()==0) return;
             Iterator<PooledConnection> locked = busy.iterator();
             int sto = getPoolProperties().getSuspectTimeout();
             while (locked.hasNext()) {
@@ -1067,7 +1022,7 @@ public class ConnectionPool {
     public void checkIdle(boolean ignoreMinSize) {
 
         try {
-            if (idle.isEmpty()) return;
+            if (idle.size()==0) return;
             long now = System.currentTimeMillis();
             Iterator<PooledConnection> unlocked = idle.iterator();
             while ( (ignoreMinSize || (idle.size()>=getPoolProperties().getMinIdle())) && unlocked.hasNext()) {
@@ -1111,17 +1066,8 @@ public class ConnectionPool {
      * Forces a validation of all idle connections if {@link PoolProperties#testWhileIdle} is set.
      */
     public void testAllIdle() {
-        testAllIdle(false);
-    }
-
-    /**
-     * Forces a validation of all idle connections if {@link PoolProperties#testWhileIdle} is set.
-     * @param checkMaxAgeOnly whether to only check {@link PooledConnection#isMaxAgeExpired()} but
-     *                        not invoke {@link PooledConnection#validate(int)}
-     */
-    public void testAllIdle(boolean checkMaxAgeOnly) {
         try {
-            if (idle.isEmpty()) return;
+            if (idle.size()==0) return;
             Iterator<PooledConnection> unlocked = idle.iterator();
             while (unlocked.hasNext()) {
                 PooledConnection con = unlocked.next();
@@ -1130,14 +1076,7 @@ public class ConnectionPool {
                     //the con been taken out, we can't clean it up
                     if (busy.contains(con))
                         continue;
-
-                    boolean release;
-                    if (checkMaxAgeOnly) {
-                        release = !reconnectIfExpired(con);
-                    } else {
-                        release = !reconnectIfExpired(con) || !con.validate(PooledConnection.VALIDATE_IDLE);
-                    }
-                    if (release) {
+                    if (!con.validate(PooledConnection.VALIDATE_IDLE)) {
                         idle.remove(con);
                         release(con);
                     }
@@ -1442,7 +1381,7 @@ public class ConnectionPool {
 
 
     private static volatile Timer poolCleanTimer = null;
-    private static Set<PoolCleaner> cleaners = new HashSet<>();
+    private static HashSet<PoolCleaner> cleaners = new HashSet<>();
 
     private static synchronized void registerCleaner(PoolCleaner cleaner) {
         unregisterCleaner(cleaner);
@@ -1469,7 +1408,7 @@ public class ConnectionPool {
             cleaner.cancel();
             if (poolCleanTimer != null) {
                 poolCleanTimer.purge();
-                if (cleaners.isEmpty()) {
+                if (cleaners.size() == 0) {
                     poolCleanTimer.cancel();
                     poolCleanTimer = null;
                 }
@@ -1525,11 +1464,8 @@ public class ConnectionPool {
                     if (pool.getPoolProperties().getMinIdle() < pool.idle
                             .size())
                         pool.checkIdle();
-                    if (pool.getPoolProperties().isTestWhileIdle()) {
-                        pool.testAllIdle(false);
-                    } else if (pool.getPoolProperties().getMaxAge() > 0) {
-                        pool.testAllIdle(true);
-                    }
+                    if (pool.getPoolProperties().isTestWhileIdle())
+                        pool.testAllIdle();
                 } catch (Exception x) {
                     log.error("", x);
                 }
