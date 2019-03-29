@@ -31,8 +31,11 @@ import org.apache.catalina.Globals;
 import org.apache.catalina.security.SecurityClassLoad;
 import org.apache.catalina.startup.ClassLoaderFactory.Repository;
 import org.apache.catalina.startup.ClassLoaderFactory.RepositoryType;
+import org.apache.jasper.runtime.JspFactoryImpl;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
+
+import javax.servlet.jsp.JspFactory;
 
 
 /**
@@ -141,6 +144,7 @@ public final class Bootstrap {
     // -------------------------------------------------------- Private Methods
 
 
+    // 初始化 ClassLoader，
     private void initClassLoaders() {
         try {
             commonLoader = createClassLoader("common", null);
@@ -162,6 +166,7 @@ public final class Bootstrap {
         throws Exception {
 
         String value = CatalinaProperties.getProperty(name + ".loader");
+        // 这代码习惯就比较好
         if ((value == null) || (value.equals("")))
             return parent;
 
@@ -252,6 +257,7 @@ public final class Bootstrap {
      * Initialize daemon.
      * @throws Exception Fatal initialization error
      */
+    // 初始化 BootStrap
     public void init() throws Exception {
 
         initClassLoaders();
@@ -272,9 +278,9 @@ public final class Bootstrap {
         if (log.isDebugEnabled())
             log.debug("Setting startup class properties");
         String methodName = "setParentClassLoader";
-        Class<?> paramTypes[] = new Class[1];
+        Class<?>[] paramTypes = new Class[1];
         paramTypes[0] = Class.forName("java.lang.ClassLoader");
-        Object paramValues[] = new Object[1];
+        Object[] paramValues = new Object[1];
         paramValues[0] = sharedLoader;
         Method method =
             startupInstance.getClass().getMethod(methodName, paramTypes);
@@ -288,6 +294,8 @@ public final class Bootstrap {
     /**
      * Load daemon.
      */
+    // 为什么要通过反射的方式呢？
+    // 调用的是 Catalina.load() 方法。
     private void load(String[] arguments)
         throws Exception {
 
@@ -456,6 +464,33 @@ public final class Bootstrap {
      *
      * @param args Command line arguments to be processed
      */
+
+    static {
+        JspFactoryImpl factory = new JspFactoryImpl();
+        org.apache.jasper.security.SecurityClassLoad.securityClassLoad(factory.getClass().getClassLoader());
+        if( System.getSecurityManager() != null ) {
+            String basePackage = "org.apache.jasper.";
+            try {
+                factory.getClass().getClassLoader().loadClass( basePackage +
+                        "runtime.JspFactoryImpl$PrivilegedGetPageContext");
+                factory.getClass().getClassLoader().loadClass( basePackage +
+                        "runtime.JspFactoryImpl$PrivilegedReleasePageContext");
+                factory.getClass().getClassLoader().loadClass( basePackage +
+                        "runtime.JspRuntimeLibrary");
+                factory.getClass().getClassLoader().loadClass( basePackage +
+                        "runtime.ServletResponseWrapperInclude");
+                factory.getClass().getClassLoader().loadClass( basePackage +
+                        "servlet.JspServletWrapper");
+            } catch (ClassNotFoundException ex) {
+                throw new IllegalStateException(ex);
+            }
+        }
+
+        if (JspFactory.getDefaultFactory() == null) {
+            JspFactory.setDefaultFactory(factory);
+        }
+    }
+
     public static void main(String args[]) {
 
         if (daemon == null) {

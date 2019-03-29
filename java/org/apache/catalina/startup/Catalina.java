@@ -253,6 +253,7 @@ public class Catalina {
      */
     protected File configFile() {
 
+        // 可以通过相对路径指定，只要在项目底下的 conf/server.xml 就行了
         File file = new File(configFile);
         if (!file.isAbsolute()) {
             file = new File(Bootstrap.getCatalinaBase(), configFile);
@@ -515,6 +516,8 @@ public class Catalina {
     /**
      * Start a new server instance.
      */
+    // 加载 server
+    // 为什么要通过反射的方式呢？？
     public void load() {
 
         long t1 = System.nanoTime();
@@ -532,6 +535,7 @@ public class Catalina {
         File file = null;
         try {
             try {
+                // 找 server.xml 文件进行配置
                 file = configFile();
                 inputStream = new FileInputStream(file);
                 inputSource = new InputSource(file.toURI().toURL().toString());
@@ -557,6 +561,7 @@ public class Catalina {
 
             // This should be included in catalina.jar
             // Alternative: don't bother with xml, just create it manually.
+            // 解析 xml
             if (inputStream == null) {
                 try {
                     inputStream = getClass().getClassLoader()
@@ -782,6 +787,7 @@ public class Catalina {
     }
 
 
+    // 定制流，也就是把 System.out 重定向成文件输出
     protected void initStreams() {
         // Replace System.out and System.err with a custom PrintStream
         System.setOut(new SystemLogHandler(System.out));

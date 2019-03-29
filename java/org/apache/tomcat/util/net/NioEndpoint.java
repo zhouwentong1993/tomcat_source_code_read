@@ -364,6 +364,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
      *  and processing may continue, <code>false</code> if the socket needs to be
      *  close immediately
      */
+    // 处理连接
     protected boolean setSocketOptions(SocketChannel socket) {
         // Process the connection
         try {
@@ -448,6 +449,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                     //if we have reached max connections, wait
                     countUpOrAwaitConnection();
 
+                    // 采用 nio 的方式获取 socket
                     SocketChannel socket = null;
                     try {
                         // Accept the next incoming connection from the server
