@@ -267,6 +267,8 @@ public class Catalina {
      * Create and configure the Digester we will be using for startup.
      * @return the main digester to parse server.xml
      */
+    // 解析 server.xml，属性注入
+    // 这里面的类都是非常重要的
     protected Digester createStartDigester() {
         long t1=System.currentTimeMillis();
         // Initialize the digester
@@ -281,6 +283,7 @@ public class Catalina {
         digester.setUseContextClassLoader(true);
 
         // Configure the actions we will be using
+        // 访问 server 节点
         digester.addObjectCreate("Server",
                                  "org.apache.catalina.core.StandardServer",
                                  "className");

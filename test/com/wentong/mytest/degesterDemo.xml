@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<School name="CSDN">
+    <Grade name="1">
+        <Class name="1" number="31"/>
+        <Class name="2" number="32"/>
+    </Grade>
+    <Grade name="2">
+        <Class name="1" number="41"/>
+        <Class name="2" number="42"/>
+    </Grade>
+</School>
