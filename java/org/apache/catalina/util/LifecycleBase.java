@@ -36,6 +36,7 @@ import org.apache.tomcat.util.res.StringManager;
  * state transition rules for {@link Lifecycle#start()} and
  * {@link Lifecycle#stop()}
  */
+// 实现类比较重要
 public abstract class LifecycleBase implements Lifecycle {
 
     private static final Log log = LogFactory.getLog(LifecycleBase.class);
@@ -97,6 +98,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
 
     @Override
+    // server 的 init 方法
     public final synchronized void init() throws LifecycleException {
         if (!state.equals(LifecycleState.NEW)) {
             invalidTransition(Lifecycle.BEFORE_INIT_EVENT);
@@ -104,6 +106,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
         try {
             setStateInternal(LifecycleState.INITIALIZING, null, false);
+            // 其实主要调用的就是 initInternal 方法，而所有的子类都会实现这个方法，包括 StandardServer。这个方法才是核心的点
             initInternal();
             setStateInternal(LifecycleState.INITIALIZED, null, false);
         } catch (Throwable t) {
@@ -147,6 +150,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
         try {
             setStateInternal(LifecycleState.STARTING_PREP, null, false);
+            // 通 initInternal 一样，也是将功能的底层实现委托给了子类。
             startInternal();
             if (state.equals(LifecycleState.FAILED)) {
                 // This is a 'controlled' failure. The component put itself into the

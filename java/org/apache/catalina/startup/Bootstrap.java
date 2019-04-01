@@ -144,7 +144,7 @@ public final class Bootstrap {
     // -------------------------------------------------------- Private Methods
 
 
-    // 初始化 ClassLoader，
+    // 初始化 ClassLoader，创建了 commonLoader、catalinaLoader、sharedLoader 类加载器，非常复杂。
     private void initClassLoaders() {
         try {
             commonLoader = createClassLoader("common", null);
@@ -269,6 +269,7 @@ public final class Bootstrap {
         // Load our startup class and call its process() method
         if (log.isDebugEnabled())
             log.debug("Loading startup class");
+        // 设置 catalina 相关属性
         Class<?> startupClass =
             catalinaLoader.loadClass
             ("org.apache.catalina.startup.Catalina");
@@ -495,6 +496,7 @@ public final class Bootstrap {
 
         if (daemon == null) {
             // Don't set daemon until init() has completed
+            // 在 init() 方法完成之前不要设置 daemon
             Bootstrap bootstrap = new Bootstrap();
             try {
                 bootstrap.init();
@@ -517,27 +519,34 @@ public final class Bootstrap {
                 command = args[args.length - 1];
             }
 
-            if (command.equals("startd")) {
-                args[args.length - 1] = "start";
-                daemon.load(args);
-                daemon.start();
-            } else if (command.equals("stopd")) {
-                args[args.length - 1] = "stop";
-                daemon.stop();
-            } else if (command.equals("start")) {
-                daemon.setAwait(true);
-                daemon.load(args);
-                daemon.start();
-            } else if (command.equals("stop")) {
-                daemon.stopServer(args);
-            } else if (command.equals("configtest")) {
-                daemon.load(args);
-                if (null==daemon.getServer()) {
-                    System.exit(1);
-                }
-                System.exit(0);
-            } else {
-                log.warn("Bootstrap: command \"" + command + "\" does not exist.");
+            switch (command) {
+                case "startd":
+                    args[args.length - 1] = "start";
+                    // 调用开始方法
+                    daemon.load(args);
+                    daemon.start();
+                    break;
+                case "stopd":
+                    args[args.length - 1] = "stop";
+                    daemon.stop();
+                    break;
+                case "start":
+                    daemon.setAwait(true);
+                    daemon.load(args);
+                    daemon.start();
+                    break;
+                case "stop":
+                    daemon.stopServer(args);
+                    break;
+                case "configtest":
+                    daemon.load(args);
+                    if (null == daemon.getServer()) {
+                        System.exit(1);
+                    }
+                    System.exit(0);
+                default:
+                    log.warn("Bootstrap: command \"" + command + "\" does not exist.");
+                    break;
             }
         } catch (Throwable t) {
             // Unwrap the Exception for clearer error reporting

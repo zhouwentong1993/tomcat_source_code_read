@@ -1829,7 +1829,7 @@ public class Digester extends DefaultHandler2 {
      */
     public void push(Object object) {
 
-        if (stack.size() == 0) {
+        if (stack.empty()) {
             root = object;
         }
         stack.push(object);

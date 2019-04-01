@@ -913,14 +913,14 @@ public class AprEndpoint extends AbstractEndpoint<Long> implements SNICallBack {
             if (running) {
                 if (log.isDebugEnabled()) {
                     log.debug(sm.getString("endpoint.debug.socket",
-                            Long.valueOf(socket)));
+                            socket));
                 }
-                AprSocketWrapper wrapper = new AprSocketWrapper(Long.valueOf(socket), this);
+                AprSocketWrapper wrapper = new AprSocketWrapper(socket, this);
                 wrapper.setKeepAliveLeft(getMaxKeepAliveRequests());
                 wrapper.setSecure(isSSLEnabled());
                 wrapper.setReadTimeout(getConnectionTimeout());
                 wrapper.setWriteTimeout(getConnectionTimeout());
-                connections.put(Long.valueOf(socket), wrapper);
+                connections.put(socket, wrapper);
                 getExecutor().execute(new SocketWithOptionsProcessor(wrapper));
             }
         } catch (RejectedExecutionException x) {
@@ -1040,15 +1040,8 @@ public class AprEndpoint extends AbstractEndpoint<Long> implements SNICallBack {
                     long socket = 0;
                     try {
                         // Accept the next incoming connection from the server
-                        // socket
+                        // socket 的核心方法都是 native 的 …
                         socket = Socket.accept(serverSock);
-                        if (log.isDebugEnabled()) {
-                            long sa = Address.get(Socket.APR_REMOTE, socket);
-                            Sockaddr addr = Address.getInfo(sa);
-                            log.debug(sm.getString("endpoint.apr.remoteport",
-                                    Long.valueOf(socket),
-                                    Long.valueOf(addr.port)));
-                        }
                     } catch (Exception e) {
                         // We didn't get a socket
                         countDownConnection();
@@ -1066,6 +1059,7 @@ public class AprEndpoint extends AbstractEndpoint<Long> implements SNICallBack {
 
                     if (running && !paused) {
                         // Hand this socket off to an appropriate processor
+                        // 将 socket 连接到指定的 processor
                         if (!processSocketWithOptions(socket)) {
                             // Close socket right away
                             closeSocket(socket);
@@ -1245,6 +1239,7 @@ public class AprEndpoint extends AbstractEndpoint<Long> implements SNICallBack {
                 sockets[size] = socket;
                 timeouts[size] = timeout;
                 flags[size] = flag;
+                // 这个操作不是原子的，volatile 不生效啊
                 size++;
                 return true;
             }
@@ -1502,16 +1497,6 @@ public class AprEndpoint extends AbstractEndpoint<Long> implements SNICallBack {
          *              Poll.APR_POLLOUT)
          */
         private void add(long socket, long timeout, int flags) {
-            if (log.isDebugEnabled()) {
-                String msg = sm.getString("endpoint.debug.pollerAdd",
-                        Long.valueOf(socket), Long.valueOf(timeout),
-                        Integer.valueOf(flags));
-                if (log.isTraceEnabled()) {
-                    log.trace(msg, new Exception());
-                } else {
-                    log.debug(msg);
-                }
-            }
             if (timeout <= 0) {
                 // Always put a timeout in
                 timeout = Integer.MAX_VALUE;
@@ -2332,7 +2317,7 @@ public class AprEndpoint extends AbstractEndpoint<Long> implements SNICallBack {
             synchronized (socket) {
                 if (!deferAccept) {
                     if (setSocketOptions(socket)) {
-                        getPoller().add(socket.getSocket().longValue(),
+                        getPoller().add(socket.getSocket(),
                                 getConnectionTimeout(), Poll.APR_POLLIN);
                     } else {
                         // Close socket and pool

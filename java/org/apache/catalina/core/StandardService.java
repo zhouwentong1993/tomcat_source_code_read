@@ -81,7 +81,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
     /**
      * The set of Connectors associated with this Service.
      */
-    protected Connector connectors[] = new Connector[0];
+    protected Connector[] connectors = new Connector[0];
     private final Object connectorsLock = new Object();
 
     /**
@@ -419,6 +419,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
         // Start our defined Container first
         if (engine != null) {
             synchronized (engine) {
+                // 还是调用 start 方法
                 engine.start();
             }
         }
@@ -522,6 +523,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
      * Invoke a pre-startup initialization. This is used to allow connectors
      * to bind to restricted ports under Unix operating environments.
      */
+    // 初始化方法，由 StandardServer.init 方法追踪过来。
     @Override
     protected void initInternal() throws LifecycleException {
 
@@ -536,6 +538,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
             if (executor instanceof JmxEnabled) {
                 ((JmxEnabled) executor).setDomain(getDomain());
             }
+            // 初始化 Executor
             executor.init();
         }
 

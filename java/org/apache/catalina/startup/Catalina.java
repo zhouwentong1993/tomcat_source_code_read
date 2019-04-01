@@ -401,7 +401,7 @@ public class Catalina {
         if (log.isDebugEnabled()) {
             log.debug("Digester for server.xml created " + ( t2-t1 ));
         }
-        return (digester);
+        return digester;
 
     }
 
@@ -518,6 +518,20 @@ public class Catalina {
      */
     // 加载 server
     // 为什么要通过反射的方式呢？？
+
+    /*
+     * 将代码简化之后，就做了下面几件事情
+     *
+     *  Digester digester = createStartDigester();
+        inputSource.setByteStream(inputStream);
+        digester.push(this);
+        digester.parse(inputSource);
+        getServer().setCatalina(this);
+        getServer().init();
+     *
+     */
+
+    // 问题：Digester 在这里有什么作用？
     public void load() {
 
         long t1 = System.nanoTime();
@@ -540,9 +554,6 @@ public class Catalina {
                 inputStream = new FileInputStream(file);
                 inputSource = new InputSource(file.toURI().toURL().toString());
             } catch (Exception e) {
-                if (log.isDebugEnabled()) {
-                    log.debug(sm.getString("catalina.configFail", file), e);
-                }
             }
             if (inputStream == null) {
                 try {
@@ -552,10 +563,6 @@ public class Catalina {
                         (getClass().getClassLoader()
                          .getResource(getConfigFile()).toString());
                 } catch (Exception e) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(sm.getString("catalina.configFail",
-                                getConfigFile()), e);
-                    }
                 }
             }
 
@@ -570,10 +577,6 @@ public class Catalina {
                     (getClass().getClassLoader()
                             .getResource("server-embed.xml").toString());
                 } catch (Exception e) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(sm.getString("catalina.configFail",
-                                "server-embed.xml"), e);
-                    }
                 }
             }
 
@@ -582,12 +585,6 @@ public class Catalina {
                 if  (file == null) {
                     log.warn(sm.getString("catalina.configFail",
                             getConfigFile() + "] or [server-embed.xml]"));
-                } else {
-                    log.warn(sm.getString("catalina.configFail",
-                            file.getAbsolutePath()));
-                    if (file.exists() && !file.canRead()) {
-                        log.warn("Permissions incorrect, read permission is not allowed on the file.");
-                    }
                 }
                 return;
             }
@@ -596,12 +593,7 @@ public class Catalina {
                 inputSource.setByteStream(inputStream);
                 digester.push(this);
                 digester.parse(inputSource);
-            } catch (SAXParseException spe) {
-                log.warn("Catalina.start using " + getConfigFile() + ": " +
-                        spe.getMessage());
-                return;
             } catch (Exception e) {
-                log.warn("Catalina.start using " + getConfigFile() + ": " , e);
                 return;
             }
         } finally {
@@ -609,7 +601,6 @@ public class Catalina {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    // Ignore
                 }
             }
         }
@@ -619,16 +610,16 @@ public class Catalina {
         getServer().setCatalinaBase(Bootstrap.getCatalinaBaseFile());
 
         // Stream redirection
+        // 将流重定向，指向 logger
         initStreams();
 
         // Start the new server
         try {
+            // 调用的 #StandardServer 的 init 方法，StandardServer 的父类实现的 LifecycleMBeanBase~
             getServer().init();
         } catch (LifecycleException e) {
             if (Boolean.getBoolean("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE")) {
                 throw new java.lang.Error(e);
-            } else {
-                log.error("Catalina.start", e);
             }
         }
 
@@ -672,6 +663,7 @@ public class Catalina {
 
         // Start the new server
         try {
+            // 也是调用的 StandardServer 的 start 方法，相当于把功能委托给了 StandardServer 做
             getServer().start();
         } catch (LifecycleException e) {
             log.fatal(sm.getString("catalina.serverStartFail"), e);
