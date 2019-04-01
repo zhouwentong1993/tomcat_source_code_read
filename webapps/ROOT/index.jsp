@@ -20,7 +20,8 @@ java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy");
 request.setAttribute("year", sdf.format(new java.util.Date()));
 request.setAttribute("tomcatUrl", "http://tomcat.apache.org/");
 request.setAttribute("tomcatDocUrl", "/docs/");
-request.setAttribute("tomcatExamplesUrl", "/examples/");
+request.setAttribute("tomcatExamplesUrl", "../examples/");
+System.out.println(request.getAttribute("tomcatExamplesUrl"));
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -77,7 +78,7 @@ request.setAttribute("tomcatExamplesUrl", "/examples/");
                 <br class="separator" />
             </div>
             <div id="middle" class="curved container">
-                <h3>Developer Quick Start</h3>
+                <h3>Developer Quick Start123</h3>
                 <div class="col25">
                     <div class="container">
                         <p><a href="${tomcatDocUrl}setup.html">Tomcat Setup</a></p>
