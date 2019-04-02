@@ -194,6 +194,7 @@ public class Catalina {
         this.useNaming = useNaming;
     }
 
+    // 由 Bootstrap 反射调用，设置为 true
     public void setAwait(boolean b) {
         await = b;
     }
@@ -267,7 +268,7 @@ public class Catalina {
      * Create and configure the Digester we will be using for startup.
      * @return the main digester to parse server.xml
      */
-    // 解析 server.xml，属性注入
+    // 解析 server.xml，属性注入，非常重要
     // 这里面的类都是非常重要的
     protected Digester createStartDigester() {
         long t1=System.currentTimeMillis();
@@ -535,6 +536,7 @@ public class Catalina {
      */
 
     // 问题：Digester 在这里有什么作用？
+    // 回答：初始化 Catalina 内部的类，通过读取并解析 server.xml，
     public void load() {
 
         long t1 = System.nanoTime();
@@ -595,6 +597,17 @@ public class Catalina {
             try {
                 inputSource.setByteStream(inputStream);
                 digester.push(this);
+                // 解析完之后，一系列的对象就出现了，在 this 里面，每一个都包含着后面一个对象的引用。
+                /*
+                这样经过对 xml 文件的解析将会产生
+                    org.apache.catalina.core.StandardServer、
+                    org.apache.catalina.core.StandardService、
+                    org.apache.catalina.connector.Connector、
+                    org.apache.catalina.core.StandardEngine、
+                    org.apache.catalina.core.StandardHost、
+                    org.apache.catalina.core.StandardContext
+                等等一系列对象，这些对象从前到后前一个包含后一个对象的引用（一对一或一对多的关系）。
+                 */
                 digester.parse(inputSource);
             } catch (Exception e) {
                 return;
@@ -700,6 +713,7 @@ public class Catalina {
             }
         }
 
+        // 控制 await 的
         if (await) {
             await();
             stop();

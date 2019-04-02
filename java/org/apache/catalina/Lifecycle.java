@@ -80,6 +80,7 @@ package org.apache.catalina;
  *
  * @author Craig R. McClanahan
  */
+// 生命周期，基础组件，定义了 start 和 init 方法
 public interface Lifecycle {
 
 
@@ -178,6 +179,7 @@ public interface Lifecycle {
      *
      * @param listener The listener to add
      */
+    // 添加一个监听器
     public void addLifecycleListener(LifecycleListener listener);
 
 

@@ -27,6 +27,7 @@ package org.apache.catalina;
  *
  * @author Craig R. McClanahan
  */
+// 针对重要事件的监听器，包含组件的 start 和 stop。对实现了 Lifecycle 接口，当生命周期状态发生变化的时候会触发。
 public interface LifecycleListener {
 
 

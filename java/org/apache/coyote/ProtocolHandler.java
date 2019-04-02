@@ -33,6 +33,7 @@ import org.apache.tomcat.util.net.SSLHostConfig;
  * @author Costin Manolache
  * @see Adapter
  */
+// 协议 Handler
 public interface ProtocolHandler {
 
     /**

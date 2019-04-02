@@ -412,6 +412,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
      * This keeps the main thread alive - the thread pool listening for http
      * connections is daemon threads.
      */
+    // 一直等，等到正确的 shutdown 命令收到为止。这是为了保证主线程活着，线程池监听 http 请求是守护进程
     @Override
     public void await() {
         // Negative values - don't wait on port - tomcat is embedded or we just don't like ports
@@ -463,6 +464,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
                     InputStream stream;
                     long acceptStartTime = System.currentTimeMillis();
                     try {
+                        // 启动时会阻塞在这里
                         socket = serverSocket.accept();
                         socket.setSoTimeout(10 * 1000);  // Ten seconds
                         stream = socket.getInputStream();
@@ -523,9 +525,10 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
                 if (match) {
                     log.info(sm.getString("standardServer.shutdownViaPort"));
                     break;
-                } else
+                } else {
                     log.warn("StandardServer.await: Invalid command '"
                             + command.toString() + "' received");
+                }
             }
         } finally {
             ServerSocket serverSocket = awaitSocket;
@@ -782,6 +785,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
     @Override
     protected void startInternal() throws LifecycleException {
 
+        // 触发事件
         fireLifecycleEvent(CONFIGURE_START_EVENT, null);
         setState(LifecycleState.STARTING);
 

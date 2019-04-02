@@ -75,6 +75,7 @@ public class Http11NioProtocol extends AbstractHttp11JsseProtocol<NioChannel> {
 
     @Override
     protected String getNamePrefix() {
+        // ssl 支持
         if (isSSLEnabled()) {
             return ("https-" + getSslImplementationShortName()+ "-nio");
         } else {

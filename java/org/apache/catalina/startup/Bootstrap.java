@@ -427,10 +427,10 @@ public final class Bootstrap {
     public void setAwait(boolean await)
         throws Exception {
 
-        Class<?> paramTypes[] = new Class[1];
+        Class<?>[] paramTypes = new Class[1];
         paramTypes[0] = Boolean.TYPE;
-        Object paramValues[] = new Object[1];
-        paramValues[0] = Boolean.valueOf(await);
+        Object[] paramValues = new Object[1];
+        paramValues[0] = await;
         Method method =
             catalinaDaemon.getClass().getMethod("setAwait", paramTypes);
         method.invoke(catalinaDaemon, paramValues);
@@ -492,7 +492,7 @@ public final class Bootstrap {
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         if (daemon == null) {
             // Don't set daemon until init() has completed
@@ -555,7 +555,6 @@ public final class Bootstrap {
                 t = t.getCause();
             }
             handleThrowable(t);
-            t.printStackTrace();
             System.exit(1);
         }
 

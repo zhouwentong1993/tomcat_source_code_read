@@ -70,12 +70,14 @@ public class Connector extends LifecycleMBeanBase  {
         this(null);
     }
 
+    // 按照协议构造 Connection，分为 http 和 ajp
     public Connector(String protocol) {
         setProtocol(protocol);
         // Instantiate protocol handler
         ProtocolHandler p = null;
         try {
             Class<?> clazz = Class.forName(protocolHandlerClassName);
+            // 通过反射初始化了 NIOEndpoint，进入了 Connector 流程。
             p = (ProtocolHandler) clazz.getConstructor().newInstance();
         } catch (Exception e) {
             log.error(sm.getString(
@@ -584,8 +586,10 @@ public class Connector extends LifecycleMBeanBase  {
 
         if ("HTTP/1.1".equals(protocol) || protocol == null) {
             if (aprConnector) {
+                // 设置协议 className
                 setProtocolHandlerClassName("org.apache.coyote.http11.Http11AprProtocol");
             } else {
+                // 默认 NIO 了，移除了 BIO
                 setProtocolHandlerClassName("org.apache.coyote.http11.Http11NioProtocol");
             }
         } else if ("AJP/1.3".equals(protocol)) {
@@ -1013,7 +1017,7 @@ public class Connector extends LifecycleMBeanBase  {
         // Validate settings before starting
         if (getPort() < 0) {
             throw new LifecycleException(sm.getString(
-                    "coyoteConnector.invalidPort", Integer.valueOf(getPort())));
+                    "coyoteConnector.invalidPort", getPort()));
         }
 
         setState(LifecycleState.STARTING);
