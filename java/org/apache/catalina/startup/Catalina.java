@@ -850,6 +850,7 @@ public class Catalina {
     /**
      * Shutdown hook which will perform a clean shutdown of Catalina if needed.
      */
+    // 钩子函数，做 JVM exit 的清理工作，通过 Runtime.getRuntime().addShutdownHook(shutdownHook) 注册
     protected class CatalinaShutdownHook extends Thread {
 
         @Override

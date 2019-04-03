@@ -79,6 +79,7 @@ import org.apache.tomcat.util.res.StringManager;
  * @author Sean Legassick
  * @author <a href="mailto:jon@latchkey.com">Jon S. Stevens</a>
  */
+// 实现 J2EE 标准的 HttpSession，tomcat 里面有两个包，一个是 javax，另外的是 apache 的。
 public class StandardSession implements HttpSession, Session, Serializable {
 
     private static final long serialVersionUID = 1L;

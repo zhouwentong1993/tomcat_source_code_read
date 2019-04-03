@@ -1409,6 +1409,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
      * This class is the equivalent of the Worker, but will simply use in an
      * external Executor thread pool.
      */
+    // 处理 socket
     protected class SocketProcessor extends SocketProcessorBase<NioChannel> {
 
         public SocketProcessor(SocketWrapperBase<NioChannel> socketWrapper, SocketEvent event) {
