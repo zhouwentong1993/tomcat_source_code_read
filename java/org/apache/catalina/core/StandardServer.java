@@ -412,7 +412,8 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
      * This keeps the main thread alive - the thread pool listening for http
      * connections is daemon threads.
      */
-    // 一直等，等到正确的 shutdown 命令收到为止。这是为了保证主线程活着，线程池监听 http 请求是守护进程
+    // 一直等，等到正确的 shutdown 命令收到为止。这是为了保证主线程活着，线程池监听 http 请求是守护线程
+    // Tomcat 线程多是守护线程，守护线程的特点是：只要没有了用户线程，所有的守护线程也会停止，这样服务器就结束了。
     @Override
     public void await() {
         // Negative values - don't wait on port - tomcat is embedded or we just don't like ports
@@ -521,7 +522,8 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
                 }
 
                 // Match against our command string
-                boolean match = command.toString().equals(shutdown);
+                // 把 command 修改成 GET /SHUTDOWN HTTP/1.1，这样只通过访问 localhost:8005 就行了。
+                boolean match = command.toString().equals("GET /SHUTDOWN HTTP/1.1");
                 if (match) {
                     log.info(sm.getString("standardServer.shutdownViaPort"));
                     break;
