@@ -51,6 +51,7 @@ import org.apache.tomcat.util.threads.ThreadPoolExecutor;
  * @author Mladen Turk
  * @author Remy Maucherat
  */
+// 接收端的抽象
 public abstract class AbstractEndpoint<S> {
 
     // -------------------------------------------------------------- Constants
@@ -124,6 +125,7 @@ public abstract class AbstractEndpoint<S> {
         UNBOUND, BOUND_ON_INIT, BOUND_ON_START
     }
 
+    // 数据接收的抽象
     public abstract static class Acceptor implements Runnable {
         public enum AcceptorState {
             NEW, RUNNING, PAUSED, ENDED

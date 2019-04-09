@@ -34,6 +34,7 @@ import org.apache.tomcat.util.net.SSLHostConfig;
  * @see Adapter
  */
 // 协议 Handler
+    // 这是协议的抽象，包括 ajp 和 http 和 https 协议
 public interface ProtocolHandler {
 
     /**

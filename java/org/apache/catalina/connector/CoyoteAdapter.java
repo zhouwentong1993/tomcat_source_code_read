@@ -61,6 +61,7 @@ import org.apache.tomcat.util.res.StringManager;
  * @author Craig R. McClanahan
  * @author Remy Maucherat
  */
+// 适配器，连接 Connector 和 Container 的
 public class CoyoteAdapter implements Adapter {
 
     private static final Log log = LogFactory.getLog(CoyoteAdapter.class);

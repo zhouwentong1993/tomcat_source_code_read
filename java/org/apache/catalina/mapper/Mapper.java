@@ -44,6 +44,7 @@ import org.apache.tomcat.util.res.StringManager;
  *
  * @author Remy Maucherat
  */
+// Mapper 组件是连接 HTTP 请求和 Servlet 的桥梁。路由器
 public final class Mapper {
 
 
