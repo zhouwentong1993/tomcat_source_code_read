@@ -51,7 +51,7 @@ import org.apache.tomcat.util.threads.ThreadPoolExecutor;
  * @author Mladen Turk
  * @author Remy Maucherat
  */
-// 接收端的抽象
+// 接收端的抽象，通过策略模式，NIO、AIO、BIO、AJP 具体实现自己的
 public abstract class AbstractEndpoint<S> {
 
     // -------------------------------------------------------------- Constants
@@ -929,6 +929,7 @@ public abstract class AbstractEndpoint<S> {
      *
      * @return if processing was triggered successfully
      */
+    // 处理请求
     public boolean processSocket(SocketWrapperBase<S> socketWrapper,
             SocketEvent event, boolean dispatch) {
         try {
@@ -979,6 +980,8 @@ public abstract class AbstractEndpoint<S> {
     public abstract void startInternal() throws Exception;
     public abstract void stopInternal() throws Exception;
 
+    // 为什么会走两遍初始化流程，并且都是走的 NIO
+    // 因为不同的协议对应着相同的 EndPoint，这其实初始化了两个协议，如果在 server.xml 中注释掉 ajp，那就只走一次了。
     public void init() throws Exception {
         if (bindOnInit) {
             bind();
@@ -988,6 +991,8 @@ public abstract class AbstractEndpoint<S> {
 
 
     public final void start() throws Exception {
+        // 如果前面没有绑定，现在绑定。
+        // 通过 bindOnInit 这个属性配置
         if (bindState == BindState.UNBOUND) {
             bind();
             bindState = BindState.BOUND_ON_START;
@@ -995,6 +1000,7 @@ public abstract class AbstractEndpoint<S> {
         startInternal();
     }
 
+    // Acceptor 类像是前台
     protected final void startAcceptorThreads() {
         int count = getAcceptorThreadCount();
         acceptors = new Acceptor[count];

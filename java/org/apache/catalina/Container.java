@@ -76,6 +76,7 @@ import org.apache.juli.logging.Log;
  * @author Craig R. McClanahan
  * @author Remy Maucherat
  */
+// 容器基础类，用来执行请求。
 public interface Container extends Lifecycle {
 
 

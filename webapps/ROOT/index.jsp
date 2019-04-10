@@ -21,7 +21,6 @@ request.setAttribute("year", sdf.format(new java.util.Date()));
 request.setAttribute("tomcatUrl", "http://tomcat.apache.org/");
 request.setAttribute("tomcatDocUrl", "/docs/");
 request.setAttribute("tomcatExamplesUrl", "../examples/");
-System.out.println(request.getAttribute("tomcatExamplesUrl"));
 %>
 <!DOCTYPE html>
 <html lang="en">

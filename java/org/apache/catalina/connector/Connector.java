@@ -52,6 +52,7 @@ import org.apache.tomcat.util.res.StringManager;
  * @author Craig R. McClanahan
  * @author Remy Maucherat
  */
+// Tomcat 核心组件之一，连接器。主要负责接收客户端请求和对请求的处理加工
 public class Connector extends LifecycleMBeanBase  {
 
     private static final Log log = LogFactory.getLog(Connector.class);

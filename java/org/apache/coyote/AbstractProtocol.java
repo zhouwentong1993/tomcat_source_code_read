@@ -568,6 +568,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
      */
 
     @Override
+    // 顶层 Protocol 的初始化
     public void init() throws Exception {
         if (getLog().isInfoEnabled())
             getLog().info(sm.getString("abstractProtocolHandler.init",
@@ -617,6 +618,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
         endpoint.setName(endpointName.substring(1, endpointName.length()-1));
 
         try {
+            // 初始化 endPoint
             endpoint.init();
         } catch (Exception ex) {
             getLog().error(sm.getString("abstractProtocolHandler.initError",

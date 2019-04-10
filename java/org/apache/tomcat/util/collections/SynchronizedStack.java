@@ -25,6 +25,7 @@ package org.apache.tomcat.util.collections;
  *
  * @param <T> The type of object managed by this stack
  */
+// Tomcat 自己实现的同步栈，为了实现最大限度的重用对象
 public class SynchronizedStack<T> {
 
     public static final int DEFAULT_SIZE = 128;

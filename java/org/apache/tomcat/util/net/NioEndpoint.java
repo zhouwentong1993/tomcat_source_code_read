@@ -66,6 +66,7 @@ import org.apache.tomcat.util.net.jsse.JSSESupport;
  * @author Mladen Turk
  * @author Remy Maucherat
  */
+@SuppressWarnings("ALL")
 public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
 
@@ -201,11 +202,14 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
     /**
      * Initialize the endpoint.
      */
+    // 首先绑定地址
     @Override
     public void bind() throws Exception {
 
+        // NIO 的初始化流程
         serverSock = ServerSocketChannel.open();
         socketProperties.setProperties(serverSock.socket());
+        // 初始化 host（如果没有，就置为本地）和端口号
         InetSocketAddress addr = (getAddress()!=null?new InetSocketAddress(getAddress(),getPort()):new InetSocketAddress(getPort()));
         serverSock.socket().bind(addr,getAcceptCount());
         serverSock.configureBlocking(true); //mimic APR behavior
@@ -231,31 +235,40 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
      * Start the NIO endpoint, creating acceptor, poller threads.
      */
     @Override
+    // 开启 NIO 端点
+    // 启动流程
     public void startInternal() throws Exception {
 
         if (!running) {
             running = true;
             paused = false;
 
+            // 创建 Processor Cache
             processorCache = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
                     socketProperties.getProcessorCache());
+            // 创建 poller Cache
             eventCache = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
                             socketProperties.getEventCache());
+            // 创建 NioChannel Cache
             nioChannels = new SynchronizedStack<>(SynchronizedStack.DEFAULT_SIZE,
                     socketProperties.getBufferPool());
 
             // Create worker collection
             if ( getExecutor() == null ) {
+                // 创建工作线程
+                // Tomcat 继承了 jdk 的线程池框架，增加了监控
                 createExecutor();
             }
 
+            // 初始化连接数控制阀门，
             initializeConnectionLatch();
 
             // Start poller threads
+            // Poller 组件和 NIO 的 Selector 组件协作
             pollers = new Poller[getPollerThreadCount()];
-            for (int i=0; i<pollers.length; i++) {
+            for (int i = 0; i < pollers.length; i++) {
                 pollers[i] = new Poller();
-                Thread pollerThread = new Thread(pollers[i], getName() + "-ClientPoller-"+i);
+                Thread pollerThread = new Thread(pollers[i], getName() + "-ClientPoller-" + i);
                 pollerThread.setPriority(threadPriority);
                 pollerThread.setDaemon(true);
                 pollerThread.start();
@@ -420,6 +433,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
      * The background thread that listens for incoming TCP/IP connections and
      * hands them off to an appropriate processor.
      */
+    // 前台负责接收请求的。
     protected class Acceptor extends AbstractEndpoint.Acceptor {
 
         @Override
@@ -454,6 +468,8 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                     try {
                         // Accept the next incoming connection from the server
                         // socket
+                        // 不是很懂，NIO 的这个不是要注册到 Selector 上吗？
+                        // 为什么是针对下一次请求来的？
                         socket = serverSock.accept();
                     } catch (IOException ioe) {
                         // We didn't get a socket
@@ -566,6 +582,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
         public void run() {
             if (interestOps == OP_REGISTER) {
                 try {
+                    // 在这里注册的
                     socket.getIOChannel().register(
                             socket.getPoller().getSelector(), SelectionKey.OP_READ, socketWrapper);
                 } catch (Exception x) {
