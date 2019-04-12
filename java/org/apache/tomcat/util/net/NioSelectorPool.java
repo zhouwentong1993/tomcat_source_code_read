@@ -59,6 +59,8 @@ public class NioSelectorPool {
     protected ConcurrentLinkedQueue<Selector> selectors =
             new ConcurrentLinkedQueue<>();
 
+
+    // 创建一个 Selector，并调用 open 方法，启动
     protected Selector getSharedSelector() throws IOException {
         if (SHARED && SHARED_SELECTOR == null) {
             synchronized ( NioSelectorPool.class ) {
@@ -128,6 +130,7 @@ public class NioSelectorPool {
     public void open() throws IOException {
         enabled = true;
         getSharedSelector();
+        // 共享 Selector，多路复用器？
         if (SHARED) {
             blockingSelector = new NioBlockingSelector();
             blockingSelector.open(getSharedSelector());
