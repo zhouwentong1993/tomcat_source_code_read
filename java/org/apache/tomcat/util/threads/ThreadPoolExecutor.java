@@ -33,6 +33,7 @@ import org.apache.tomcat.util.res.StringManager;
  * and that one will always throw a RejectedExecutionException
  *
  */
+// 扩展了 jdk 的 ThreadPoolExecutor，增加了提交任务数，最骚的是，名字还整得一样。
 public class ThreadPoolExecutor extends java.util.concurrent.ThreadPoolExecutor {
     /**
      * The string manager for this package.

@@ -25,6 +25,7 @@ package org.apache.tomcat.util.collections;
  *
  * @param <T> The type of object managed by this queue
  */
+// Tomcat 自己实现的同步队列
 public class SynchronizedQueue<T> {
 
     public static final int DEFAULT_SIZE = 128;
