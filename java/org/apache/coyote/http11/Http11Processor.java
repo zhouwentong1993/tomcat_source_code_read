@@ -669,6 +669,7 @@ public class Http11Processor extends AbstractProcessor {
 
         // Setting up the I/O
         setSocketWrapper(socketWrapper);
+        // 初始化 byteBuffer
         inputBuffer.init(socketWrapper);
         outputBuffer.init(socketWrapper);
 
