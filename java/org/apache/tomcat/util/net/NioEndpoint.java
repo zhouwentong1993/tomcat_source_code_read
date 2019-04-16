@@ -477,9 +477,9 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         // 为什么是针对下一次请求来的？
                         // 一次请求， debug 的时候，这个方法走了两次，等下一次请求来的时候，直接过了这一行，到下面的 errorDelay = 0 那一行了。
                         // 回答：这是 NIO 类决定的，这个方法如果是非阻塞的，立马返回。如果是阻塞的，会一直阻塞在这里。（待完善）
-                        System.out.println(Thread.currentThread().getName() + "start");
+//                        System.out.println(Thread.currentThread().getName() + "start");
                         socket = serverSock.accept();
-                        System.out.println(Thread.currentThread().getName() + "end");
+//                        System.out.println(Thread.currentThread().getName() + "end");
                     } catch (IOException ioe) {
                         // We didn't get a socket
                         countDownConnection();
