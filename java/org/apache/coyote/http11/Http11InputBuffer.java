@@ -774,7 +774,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
             }
 
             chr = byteBuffer.get();
-            System.out.print((char)chr);
+//            System.out.print((char)chr);
 
             if (chr == Constants.CR) {
                 // Skip
@@ -809,7 +809,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
 
             int pos = byteBuffer.position();
             chr = byteBuffer.get();
-            System.out.print((char)chr);
+//            System.out.print((char)chr);
             if (chr == Constants.COLON) {
                 headerParsePos = HeaderParsePosition.HEADER_VALUE_START;
                 headerData.headerValue = headers.addValue(byteBuffer.array(), headerData.start,
@@ -860,7 +860,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
                     }
 
                     chr = byteBuffer.get();
-                    System.out.print((char)chr);
+//                    System.out.print((char)chr);
                     if (!(chr == Constants.SP || chr == Constants.HT)) {
                         headerParsePos = HeaderParsePosition.HEADER_VALUE;
                         byteBuffer.position(byteBuffer.position() - 1);
@@ -883,7 +883,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
                     }
 
                     chr = byteBuffer.get();
-                    System.out.print((char)chr);
+//                    System.out.print((char)chr);
                     if (chr == Constants.CR) {
                         // Skip
                     } else if (chr == Constants.LF) {
