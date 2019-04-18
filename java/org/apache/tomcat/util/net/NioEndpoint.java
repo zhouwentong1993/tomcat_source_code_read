@@ -1326,6 +1326,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
         @Override
         public void registerReadInterest() {
+            // 注册读取事件。
             getPoller().add(getSocket(), SelectionKey.OP_READ);
         }
 

@@ -306,7 +306,7 @@ public abstract class AbstractEndpoint<S> {
     /**
      * Acceptor thread count.
      */
-    protected int acceptorThreadCount = 1;
+    protected int acceptorThreadCount = 3;
 
     public void setAcceptorThreadCount(int acceptorThreadCount) {
         this.acceptorThreadCount = acceptorThreadCount;

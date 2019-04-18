@@ -343,6 +343,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
      * @return true if data is properly fed; false if no data is available
      * immediately and thread should be freed
      */
+    // 解析 HEADER
     boolean parseRequestLine(boolean keptAlive) throws IOException {
 
         // check state
@@ -390,7 +391,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                 if (request.getStartTime() < 0) {
                     request.setStartTime(System.currentTimeMillis());
                 }
-                chr = byteBuffer.get();
+                chr = getAndPrintBuffer(byteBuffer);
             } while ((chr == Constants.CR) || (chr == Constants.LF));
             byteBuffer.position(byteBuffer.position() - 1);
 
@@ -416,7 +417,8 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                 // Spec says method name is a token followed by a single SP but
                 // also be tolerant of multiple SP and/or HT.
                 int pos = byteBuffer.position();
-                byte chr = byteBuffer.get();
+                byte chr = getAndPrintBuffer(byteBuffer);
+                // 如果是制表符或者空格
                 if (chr == Constants.SP || chr == Constants.HT) {
                     space = true;
                     request.method().setBytes(byteBuffer.array(), parsingRequestLineStart,
@@ -437,7 +439,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                     if (!fill(false)) // request line parsing
                         return false;
                 }
-                byte chr = byteBuffer.get();
+                byte chr = getAndPrintBuffer(byteBuffer);
                 if (!(chr == Constants.SP || chr == Constants.HT)) {
                     space = false;
                     byteBuffer.position(byteBuffer.position() - 1);
@@ -461,7 +463,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                         return false;
                 }
                 int pos = byteBuffer.position();
-                byte chr = byteBuffer.get();
+                byte chr = getAndPrintBuffer(byteBuffer);
                 if (chr == Constants.SP || chr == Constants.HT) {
                     space = true;
                     end = pos;
@@ -496,7 +498,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                     if (!fill(false)) // request line parsing
                         return false;
                 }
-                byte chr = byteBuffer.get();
+                byte chr = getAndPrintBuffer(byteBuffer);
                 if (!(chr == Constants.SP || chr == Constants.HT)) {
                     space = false;
                     byteBuffer.position(byteBuffer.position() - 1);
@@ -521,7 +523,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                 }
 
                 int pos = byteBuffer.position();
-                byte chr = byteBuffer.get();
+                byte chr = getAndPrintBuffer(byteBuffer);
                 if (chr == Constants.CR) {
                     end = pos;
                 } else if (chr == Constants.LF) {
@@ -548,6 +550,17 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
         }
         throw new IllegalStateException(
                 "Invalid request line parse phase:" + parsingRequestLinePhase);
+    }
+
+    /**
+     * 打印参数用的，看看都读出来什么
+     * @param byteBuffer
+     * @return
+     */
+    private byte getAndPrintBuffer(ByteBuffer byteBuffer) {
+        byte b = byteBuffer.get();
+        System.out.print((char)b);
+        return b;
     }
 
 
