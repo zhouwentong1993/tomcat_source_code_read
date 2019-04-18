@@ -567,6 +567,29 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
     /**
      * Parse the HTTP headers.
      */
+    /*
+    解析 HTTP 头信息，通过 debug + 打印日志，得到下面的东西
+
+    HHost: llocalhost:8080
+CConnection: kkeep-alive
+CCache-Control: mmax-age=0
+UUpgrade-Insecure-Requests: 11
+UUser-Agent: MMozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36
+AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*;q=0.8,application/signed-exchange;v=b3
+//    AAccept-Encoding: ggzip, deflate, br
+//    AAccept-Language: zzh-CN,zh;q=0.9,en;q=0.8
+//
+//    HHost: llocalhost:8080
+//    CConnection: kkeep-alive
+//    PPragma: nno-cache
+//    CCache-Control: nno-cache
+//    UUser-Agent: MMozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36
+//    AAccept: iimage/webp,image/apng,image/*,*;q=0.8
+//    RReferer: hhttp://localhost:8080/
+//    AAccept-Encoding: ggzip, deflate, br
+//    AAccept-Language: zzh-CN,zh;q=0.9,en;q=0.8
+
+            */
     boolean parseHeaders() throws IOException {
         if (!parsingHeader) {
             throw new IllegalStateException(sm.getString("iib.parseheaders.ise.error"));
@@ -764,6 +787,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
             }
 
             chr = byteBuffer.get();
+//            System.out.print((char)chr);
 
             if (chr == Constants.CR) {
                 // Skip
@@ -798,6 +822,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
 
             int pos = byteBuffer.position();
             chr = byteBuffer.get();
+//            System.out.print((char)chr);
             if (chr == Constants.COLON) {
                 headerParsePos = HeaderParsePosition.HEADER_VALUE_START;
                 headerData.headerValue = headers.addValue(byteBuffer.array(), headerData.start,
@@ -848,6 +873,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                     }
 
                     chr = byteBuffer.get();
+//                    System.out.print((char)chr);
                     if (!(chr == Constants.SP || chr == Constants.HT)) {
                         headerParsePos = HeaderParsePosition.HEADER_VALUE;
                         byteBuffer.position(byteBuffer.position() - 1);
@@ -870,6 +896,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                     }
 
                     chr = byteBuffer.get();
+//                    System.out.print((char)chr);
                     if (chr == Constants.CR) {
                         // Skip
                     } else if (chr == Constants.LF) {

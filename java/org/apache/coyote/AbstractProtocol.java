@@ -821,6 +821,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                             processor = upgradeProtocol.getProcessor(
                                     wrapper, getProtocol().getAdapter());
                         } else if (negotiatedProtocol.equals("http/1.1")) {
+                            System.out.println("this request based on http1.1");
                             // Explicitly negotiated the default protocol.
                             // Obtain a processor below.
                         } else {
@@ -855,6 +856,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                                 processor));
                     }
                 }
+                // processor 充分缓存，提高性能
                 if (processor == null) {
                     processor = getProtocol().createProcessor();
                     register(processor);
