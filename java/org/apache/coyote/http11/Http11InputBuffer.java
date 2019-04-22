@@ -336,6 +336,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
      * Read the request line. This function is meant to be used during the
      * HTTP request header parsing. Do NOT attempt to read the request body
      * using it.
+     * 读取请求行，该方法是用来做 HTTP 请求头解析的，不要去尝试去解析请求 body。
      *
      * @throws IOException If an exception occurs during the underlying socket
      * read operations, or if the given buffer is not big enough to accommodate
@@ -720,6 +721,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
         int bufLength = headerBufferSize +
                 wrapper.getSocketBufferHandler().getReadBuffer().capacity();
         if (byteBuffer == null || byteBuffer.capacity() < bufLength) {
+            // 分配 ByteBuffer
             byteBuffer = ByteBuffer.allocate(bufLength);
             byteBuffer.position(0).limit(0);
         }
@@ -822,7 +824,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
 
             int pos = byteBuffer.position();
             chr = byteBuffer.get();
-//            System.out.print((char)chr);
+            System.out.print((char)chr);
             if (chr == Constants.COLON) {
                 headerParsePos = HeaderParsePosition.HEADER_VALUE_START;
                 headerData.headerValue = headers.addValue(byteBuffer.array(), headerData.start,
@@ -995,7 +997,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
     }
 
 
-    private static enum HeaderParsePosition {
+    private enum HeaderParsePosition {
         /**
          * Start of a new header. A CRLF here means that there are no more
          * headers. Any other character starts a header name.
