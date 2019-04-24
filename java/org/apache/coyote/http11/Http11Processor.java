@@ -1383,6 +1383,7 @@ public class Http11Processor extends AbstractProcessor {
     /**
      * Parse host.
      */
+    // 解析 host + port，根据算法
     private void parseHost(MessageBytes valueMB) {
 
         if (valueMB == null || valueMB.isNull()) {
@@ -1395,6 +1396,7 @@ public class Http11Processor extends AbstractProcessor {
         }
 
         ByteChunk valueBC = valueMB.getByteChunk();
+        // header 内容
         byte[] valueB = valueBC.getBytes();
         int valueL = valueBC.getLength();
         int valueS = valueBC.getStart();

@@ -778,7 +778,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
         //
 
         byte chr = 0;
-        while (headerParsePos == HeaderParsePosition.HEADER_START) {
+         while (headerParsePos == HeaderParsePosition.HEADER_START) {
 
             // Read new bytes if needed
             if (byteBuffer.position() >= byteBuffer.limit()) {
