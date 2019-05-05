@@ -851,9 +851,9 @@ public final class Mapper {
      * @throws IOException if the buffers are too small to hold the results of
      *                     the mapping.
      */
-    private final void internalMapWrapper(ContextVersion contextVersion,
-                                          CharChunk path,
-                                          MappingData mappingData) throws IOException {
+    private void internalMapWrapper(ContextVersion contextVersion,
+                                    CharChunk path,
+                                    MappingData mappingData) throws IOException {
 
         int pathOffset = path.getOffset();
         int pathEnd = path.getEnd();

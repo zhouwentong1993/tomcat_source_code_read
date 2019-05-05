@@ -771,6 +771,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
      * @return false after reading a blank line (which indicates that the
      * HTTP header parsing is done
      */
+    // 一个一个地解析 HTTP header。通过 headerParsePos 字段来进行转移。
     private HeaderParseStatus parseHeader() throws IOException {
 
         //
@@ -789,7 +790,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
             }
 
             chr = byteBuffer.get();
-//            System.out.print((char)chr);
+            System.out.print((char)chr);
 
             if (chr == Constants.CR) {
                 // Skip
@@ -846,6 +847,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
 
             // chr is next byte of header name. Convert to lowercase.
             if ((chr >= Constants.A) && (chr <= Constants.Z)) {
+                // 大写转小写
                 byteBuffer.put(pos, (byte) (chr - Constants.LC_OFFSET));
             }
         }
@@ -875,7 +877,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
                     }
 
                     chr = byteBuffer.get();
-//                    System.out.print((char)chr);
+                    System.out.print((char)chr);
                     if (!(chr == Constants.SP || chr == Constants.HT)) {
                         headerParsePos = HeaderParsePosition.HEADER_VALUE;
                         byteBuffer.position(byteBuffer.position() - 1);
@@ -898,7 +900,7 @@ AAccept: ttext/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image
                     }
 
                     chr = byteBuffer.get();
-//                    System.out.print((char)chr);
+                    System.out.print((char)chr);
                     if (chr == Constants.CR) {
                         // Skip
                     } else if (chr == Constants.LF) {
