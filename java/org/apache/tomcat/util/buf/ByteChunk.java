@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
  * to be able to parse the request without converting to string.
  */
 
+// 就是提供了 ByteBuffer 的功能，看代码提交是 2006 年，那时 Java 已经出到了 6.
 // TODO: This class could either extend ByteBuffer, or better a ByteBuffer
 // inside this way it could provide the search/etc on ByteBuffer, as a helper.
 

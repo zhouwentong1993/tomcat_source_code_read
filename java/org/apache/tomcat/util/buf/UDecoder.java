@@ -128,8 +128,6 @@ public final class UDecoder {
         }
 
         mb.setEnd( idx );
-
-        return;
     }
 
     // -------------------- Additional methods --------------------

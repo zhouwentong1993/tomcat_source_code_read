@@ -579,6 +579,7 @@ public class CoyoteAdapter implements Adapter {
 
         // Check for ping OPTIONS * request
         if (undecodedURI.equals("*")) {
+            // 设置允许支持的请求方式
             if (req.method().equalsIgnoreCase("OPTIONS")) {
                 StringBuilder allow = new StringBuilder();
                 allow.append("GET, HEAD, POST, PUT, DELETE");
@@ -659,6 +660,7 @@ public class CoyoteAdapter implements Adapter {
 
         // Request mapping.
         MessageBytes serverName;
+        // todo 看 mapper 的 map 过程
         if (connector.getUseIPVHosts()) {
             serverName = req.localName();
             if (serverName.isNull()) {
@@ -869,6 +871,7 @@ public class CoyoteAdapter implements Adapter {
 
 
     /**
+     * 从 request 里面解析 Path parameters。现在暂时没用了，只用于 sessionId 的解析。
      * Extract the path parameters from the request. This assumes parameters are
      * of the form /path;name=value;name2=value2/ etc. Currently only really
      * interested in the session ID that will be in this form. Other parameters
