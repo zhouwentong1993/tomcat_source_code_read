@@ -523,6 +523,7 @@ public final class Bootstrap {
                 case "startd":
                     args[args.length - 1] = "start";
                     // 调用开始方法
+                    // todo 写清楚 start 干了什么
                     daemon.load(args);
                     daemon.start();
                     break;
