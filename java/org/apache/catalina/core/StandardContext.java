@@ -208,7 +208,7 @@ public class StandardContext extends ContainerBase
      * application, in the order they were encountered in the resulting merged
      * web.xml file.
      */
-    private String applicationListeners[] = new String[0];
+    private String[] applicationListeners = new String[0];
 
     private final Object applicationListenersLock = new Object();
 
