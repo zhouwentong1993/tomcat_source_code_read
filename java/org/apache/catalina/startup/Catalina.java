@@ -289,6 +289,7 @@ public class Catalina {
                             "setServer",
                             "org.apache.catalina.Server");
 
+        // 配置 JNDI 资源文件
         digester.addObjectCreate("Server/GlobalNamingResources",
                                  "org.apache.catalina.deploy.NamingResourcesImpl");
         digester.addSetProperties("Server/GlobalNamingResources");
@@ -300,10 +301,12 @@ public class Catalina {
                                  null, // MUST be specified in the element
                                  "className");
         digester.addSetProperties("Server/Listener");
+        // 给 Server 注册监听器
         digester.addSetNext("Server/Listener",
                             "addLifecycleListener",
                             "org.apache.catalina.LifecycleListener");
 
+        // 处理 Server 下的 Service
         digester.addObjectCreate("Server/Service",
                                  "org.apache.catalina.core.StandardService",
                                  "className");
@@ -321,6 +324,7 @@ public class Catalina {
                             "org.apache.catalina.LifecycleListener");
 
         //Executor
+        // 处理 Executor
         digester.addObjectCreate("Server/Service/Executor",
                          "org.apache.catalina.core.StandardThreadExecutor",
                          "className");
@@ -339,6 +343,7 @@ public class Catalina {
                             "addConnector",
                             "org.apache.catalina.connector.Connector");
 
+        // Tomcat 新加的配置
         digester.addObjectCreate("Server/Service/Connector/SSLHostConfig",
                                  "org.apache.tomcat.util.net.SSLHostConfig");
         digester.addSetProperties("Server/Service/Connector/SSLHostConfig");

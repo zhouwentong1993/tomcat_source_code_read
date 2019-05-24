@@ -181,6 +181,7 @@ public interface Server extends Lifecycle {
      *
      * @param service The Service to be added
      */
+    // 将 Service 关联到该 Server 上
     public void addService(Service service);
 
 
