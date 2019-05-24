@@ -17,6 +17,7 @@
 
 package org.apache.juli.logging;
 
+import java.lang.reflect.Field;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
@@ -84,7 +85,8 @@ class DirectJDKLog implements Log {
 
     @Override
     public final boolean isDebugEnabled() {
-        return logger.isLoggable(Level.FINE);
+        return true;
+//        return logger.isLoggable(Level.FINE);
     }
 
     @Override
@@ -162,11 +164,12 @@ class DirectJDKLog implements Log {
     // using java.util.logging - and the ugliness if you need to wrap it - is far
     // worse than the unfriendly and uncommon default format for logs.
 
+    // todo 修改日志级别的恶心方法！！！！！！！记得改回来
     private void log(Level level, String msg, Throwable ex) {
-        if (logger.isLoggable(level)) {
+        if (true || logger.isLoggable(level)) {
             // Hack (?) to get the stack trace.
             Throwable dummyException=new Throwable();
-            StackTraceElement locations[]=dummyException.getStackTrace();
+            StackTraceElement[] locations=dummyException.getStackTrace();
             // Caller will be the third element
             String cname = "unknown";
             String method = "unknown";
@@ -176,6 +179,13 @@ class DirectJDKLog implements Log {
                 method = caller.getMethodName();
             }
             if (ex==null) {
+                try {
+                    Field value = level.getClass().getDeclaredField("value");
+                    value.setAccessible(true);
+                    value.set(level,Level.INFO.intValue());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 logger.logp(level, cname, method, msg);
             } else {
                 logger.logp(level, cname, method, msg, ex);
