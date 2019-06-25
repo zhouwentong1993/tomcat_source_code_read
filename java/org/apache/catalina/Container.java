@@ -77,6 +77,14 @@ import org.apache.juli.logging.Log;
  * @author Remy Maucherat
  */
 // 容器基础类，用来执行请求。
+
+/**
+ * 容器主要包括四类，自上而下分别为：
+ * ① Engine：表示整个 Catalina 的 Servlet 引擎
+ * ② Host：表示一个拥有数个上下文的虚拟主机
+ * ③ Context：表示一个 Web 应用，一个 context 包含一个或者多个 Wrapper
+ * ④ Wrapper：表示一个独立的 Servlet。
+ */
 public interface Container extends Lifecycle {
 
 
