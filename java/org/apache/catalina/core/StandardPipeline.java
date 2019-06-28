@@ -111,7 +111,7 @@ public class StandardPipeline extends LifecycleBase
         Valve valve = (first!=null)?first:basic;
         boolean supported = true;
         while (supported && valve!=null) {
-            supported = supported & valve.isAsyncSupported();
+            supported = valve.isAsyncSupported();
             valve = valve.getNext();
         }
         return supported;
@@ -178,8 +178,9 @@ public class StandardPipeline extends LifecycleBase
             current = basic;
         }
         while (current != null) {
-            if (current instanceof Lifecycle)
+            if (current instanceof Lifecycle) {
                 ((Lifecycle) current).start();
+            }
             current = current.getNext();
         }
 
@@ -226,10 +227,8 @@ public class StandardPipeline extends LifecycleBase
      */
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Pipeline[");
-        sb.append(container);
-        sb.append(']');
-        return sb.toString();
+        return "Pipeline[" + container +
+                ']';
     }
 
 
@@ -265,8 +264,9 @@ public class StandardPipeline extends LifecycleBase
 
         // Change components if necessary
         Valve oldBasic = this.basic;
-        if (oldBasic == valve)
+        if (oldBasic == valve) {
             return;
+        }
 
         // Stop the old component if necessary
         if (oldBasic != null) {
@@ -339,8 +339,9 @@ public class StandardPipeline extends LifecycleBase
     public void addValve(Valve valve) {
 
         // Validate that we can add this Valve
-        if (valve instanceof Contained)
+        if (valve instanceof Contained) {
             ((Contained) valve).setContainer(this.container);
+        }
 
         // Start the new component if necessary
         if (getState().isAvailable()) {
