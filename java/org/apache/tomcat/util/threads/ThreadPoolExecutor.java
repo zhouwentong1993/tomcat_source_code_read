@@ -47,6 +47,7 @@ public class ThreadPoolExecutor extends java.util.concurrent.ThreadPoolExecutor 
      * latter did not start executing the task yet.
      * This number is always greater or equal to {@link #getActiveCount()}.
      */
+    // 已经提交的任务数量。
     private final AtomicInteger submittedCount = new AtomicInteger(0);
     private final AtomicLong lastContextStoppedTime = new AtomicLong(0L);
 
@@ -162,6 +163,8 @@ public class ThreadPoolExecutor extends java.util.concurrent.ThreadPoolExecutor 
      * accepted for execution - the queue is full
      * @throws NullPointerException if command or unit is null
      */
+    // 和原生的不一致，原生如果超过最大线程数，直接抛出异常
+    // 在 Tomcat 里，直接调用原生的 execute 方法，但是捕获了特定异常，如果是工作队列的话，再次将数据放入队列中。
     public void execute(Runnable command, long timeout, TimeUnit unit) {
         submittedCount.incrementAndGet();
         try {
