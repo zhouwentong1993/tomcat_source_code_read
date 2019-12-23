@@ -85,8 +85,7 @@ class DirectJDKLog implements Log {
 
     @Override
     public final boolean isDebugEnabled() {
-        return true;
-//        return logger.isLoggable(Level.FINE);
+        return logger.isLoggable(Level.FINE);
     }
 
     @Override
@@ -166,7 +165,7 @@ class DirectJDKLog implements Log {
 
     // todo 修改日志级别的恶心方法！！！！！！！记得改回来
     private void log(Level level, String msg, Throwable ex) {
-        if (true || logger.isLoggable(level)) {
+        if (logger.isLoggable(level)) {
             // Hack (?) to get the stack trace.
             Throwable dummyException=new Throwable();
             StackTraceElement[] locations=dummyException.getStackTrace();
@@ -179,13 +178,6 @@ class DirectJDKLog implements Log {
                 method = caller.getMethodName();
             }
             if (ex==null) {
-                try {
-                    Field value = level.getClass().getDeclaredField("value");
-                    value.setAccessible(true);
-                    value.set(level,Level.INFO.intValue());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 logger.logp(level, cname, method, msg);
             } else {
                 logger.logp(level, cname, method, msg, ex);
