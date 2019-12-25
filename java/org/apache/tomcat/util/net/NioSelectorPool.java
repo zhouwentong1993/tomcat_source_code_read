@@ -36,6 +36,7 @@ import org.apache.juli.logging.LogFactory;
  * @since 6.0
  */
 
+@SuppressWarnings("ALL")
 public class NioSelectorPool {
 
     public NioSelectorPool() {
@@ -48,7 +49,7 @@ public class NioSelectorPool {
 
     protected NioBlockingSelector blockingSelector;
 
-    protected volatile Selector SHARED_SELECTOR;
+    protected Selector SHARED_SELECTOR;
 
     protected int maxSelectors = 200;
     protected long sharedSelectorTimeout = 30000;
@@ -65,6 +66,8 @@ public class NioSelectorPool {
         if (SHARED && SHARED_SELECTOR == null) {
             synchronized ( NioSelectorPool.class ) {
                 if ( SHARED_SELECTOR == null )  {
+                    // 创建 Selector，初始化
+                    // todo 这个共享的 Selector 是干嘛的
                     SHARED_SELECTOR = Selector.open();
                     log.info("Using a shared selector for servlet write/read");
                 }
@@ -129,9 +132,10 @@ public class NioSelectorPool {
 
     public void open() throws IOException {
         enabled = true;
+        // 共享 Selector，多路复用器
         getSharedSelector();
-        // 共享 Selector，多路复用器？
         if (SHARED) {
+            // todo 为什么又创建了一个 Selector
             blockingSelector = new NioBlockingSelector();
             blockingSelector.open(getSharedSelector());
         }

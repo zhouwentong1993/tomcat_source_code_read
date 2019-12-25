@@ -29,6 +29,7 @@ import java.nio.channels.AsynchronousSocketChannel;
  * in server.xml. All properties are prefixed with &quot;socket.&quot;
  * and are currently only working for the Nio connector
  */
+// 存放 Socket 属性的类
 public class SocketProperties {
 
     /**

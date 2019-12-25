@@ -131,7 +131,7 @@ public abstract class AbstractEndpoint<S> {
             NEW, RUNNING, PAUSED, ENDED
         }
 
-        protected volatile AcceptorState state = AcceptorState.NEW;
+        protected AcceptorState state = AcceptorState.NEW;
         public final AcceptorState getState() {
             return state;
         }
@@ -984,7 +984,9 @@ public abstract class AbstractEndpoint<S> {
     // 因为不同的协议对应着相同的 EndPoint，这其实初始化了两个协议，如果在 server.xml 中注释掉 ajp，那就只走一次了。
     public void init() throws Exception {
         if (bindOnInit) {
+            // 首先初始化 ServerSocketChannel 和 Selector。但是两者还没有绑定
             bind();
+            // 变更绑定状态
             bindState = BindState.BOUND_ON_INIT;
         }
     }
@@ -1001,12 +1003,16 @@ public abstract class AbstractEndpoint<S> {
     }
 
     // Acceptor 类像是前台
+    // 这个类负责接收连接请求，并且将 channel 注册到 Selector 上，就是前台迎宾的。
     protected final void startAcceptorThreads() {
         int count = getAcceptorThreadCount();
         acceptors = new Acceptor[count];
 
         for (int i = 0; i < count; i++) {
             acceptors[i] = createAcceptor();
+            // 对应的线程是 http-nio-8080-Acceptor-0
+            // 对应的线程是 http-nio-8080-Acceptor-1
+            // 对应的线程是 http-nio-8080-Acceptor-2
             String threadName = getName() + "-Acceptor-" + i;
             acceptors[i].setThreadName(threadName);
             Thread t = new Thread(acceptors[i], threadName);

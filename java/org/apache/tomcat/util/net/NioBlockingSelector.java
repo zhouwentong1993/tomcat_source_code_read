@@ -55,6 +55,7 @@ public class NioBlockingSelector {
     }
 
     public void open(Selector selector) {
+        //
         sharedSelector = selector;
         poller = new BlockPoller();
         poller.selector = sharedSelector;
@@ -220,12 +221,7 @@ public class NioBlockingSelector {
         public void disable() { run = false; selector.wakeup();}
         protected final AtomicInteger wakeupCounter = new AtomicInteger(0);
         public void cancelKey(final SelectionKey key) {
-            Runnable r = new Runnable() {
-                @Override
-                public void run() {
-                    key.cancel();
-                }
-            };
+            Runnable r = key::cancel;
             events.offer(r);
             wakeup();
         }

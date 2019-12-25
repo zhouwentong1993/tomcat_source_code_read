@@ -76,6 +76,7 @@ public class ThreadPoolExecutor extends java.util.concurrent.ThreadPoolExecutor 
 
     public ThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, new RejectHandler());
+        // 提前初始化核心线程
         prestartAllCoreThreads();
     }
 
