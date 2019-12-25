@@ -516,6 +516,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         // Otherwise it will block indefinitely until a new connection is available
                         // or an I/O error occurs.
 //                        System.out.println(Thread.currentThread().getName() + "start");
+                        System.out.println("Acceptor.run");
                         socket = serverSock.accept();
 //                        System.out.println(Thread.currentThread().getName() + "end");
                     } catch (IOException ioe) {
@@ -629,6 +630,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
         public void run() {
             // 如果要注册的是「注册事件」
             if (interestOps == OP_REGISTER) {
+                System.out.println("PollerEvent.run");
                 try {
                     // 在这里注册的
                     socket.getIOChannel().register(
@@ -894,14 +896,16 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                     continue;
                 }
                 //either we timed out or we woke up, process events first
-                if (keyCount == 0) hasEvents = (hasEvents | events());
-
+                if (keyCount == 0) {
+                    hasEvents = (hasEvents || events());
+                }
                 // 遍历获得的事件
                 Iterator<SelectionKey> iterator =
                         keyCount > 0 ? selector.selectedKeys().iterator() : null;
                 // Walk through the collection of ready keys and dispatch
                 // any active event.
                 while (iterator != null && iterator.hasNext()) {
+                    System.out.println("Poller.run");
                     SelectionKey sk = iterator.next();
                     NioSocketWrapper attachment = (NioSocketWrapper) sk.attachment();
                     // Attachment may be null if another thread has called
@@ -1557,8 +1561,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
         @Override
         protected void doRun() {
-            System.out.println();
-            System.err.println("doRun invoke");
+            System.out.println("SocketProcessor.doRun");
             NioChannel socket = socketWrapper.getSocket();
             SelectionKey key = socket.getIOChannel().keyFor(socket.getPoller().getSelector());
 
@@ -1635,6 +1638,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
     /**
      * SendfileData class.
      */
+    // SendFile 就是跟零拷贝有关的东西
     public static class SendfileData extends SendfileDataBase {
 
         public SendfileData(String filename, long pos, long length) {
