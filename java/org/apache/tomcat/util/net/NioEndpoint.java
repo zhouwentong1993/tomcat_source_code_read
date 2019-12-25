@@ -302,6 +302,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 Thread pollerThread = new Thread(pollers[i], getName() + "-ClientPoller-" + i);
                 pollerThread.setPriority(threadPriority);
                 pollerThread.setDaemon(true);
+                // 启动 poller 线程
                 pollerThread.start();
             }
 
@@ -419,6 +420,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             Socket sock = socket.socket();
             socketProperties.setProperties(sock);
 
+            // 该类是用来装饰 Channel 的，将 SocketChannel 又加装了一层。
             NioChannel channel = nioChannels.pop();
             if (channel == null) {
                 SocketBufferHandler bufhandler = new SocketBufferHandler(
@@ -435,6 +437,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 channel.setIOChannel(socket);
                 channel.reset();
             }
+            // 向选择器注册
             getPoller0().register(channel);
         } catch (Throwable t) {
             ExceptionUtils.handleThrowable(t);
@@ -520,6 +523,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         countDownConnection();
                         if (running) {
                             // Introduce delay if necessary
+                            // delay 一会儿
                             errorDelay = handleExceptionWithDelay(errorDelay);
                             // re-throw
                             throw ioe;
@@ -708,6 +712,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             selector.wakeup();
         }
 
+        // 在事件队列里面添加一个事件
         private void addEvent(PollerEvent event) {
             events.offer(event);
             if (wakeupCounter.incrementAndGet() == 0) {
@@ -768,6 +773,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
          *
          * @param socket The newly created socket
          */
+        // 将 SocketChannel 注册，其实就把事件放到了 events 栈里面，通过栈数据共享
         public void register(final NioChannel socket) {
             socket.setPoller(this);
             NioSocketWrapper ka = new NioSocketWrapper(socket, NioEndpoint.this);
@@ -779,10 +785,14 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             ka.setSecure(isSSLEnabled());
             ka.setReadTimeout(getConnectionTimeout());
             ka.setWriteTimeout(getConnectionTimeout());
-            PollerEvent pollerEvent = eventCache.pop();
             ka.interestOps(SelectionKey.OP_READ);//this is what OP_REGISTER turns into.
-            if (pollerEvent == null) pollerEvent = new PollerEvent(socket, ka, OP_REGISTER);
-            else pollerEvent.reset(socket, ka, OP_REGISTER);
+
+            PollerEvent pollerEvent = eventCache.pop();
+            if (pollerEvent == null) {
+                pollerEvent = new PollerEvent(socket, ka, OP_REGISTER);
+            } else {
+                pollerEvent.reset(socket, ka, OP_REGISTER);
+            }
             addEvent(pollerEvent);
         }
 
@@ -1151,7 +1161,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
         private int interestOps = 0;
         private CountDownLatch readLatch = null;
         private CountDownLatch writeLatch = null;
-        private volatile SendfileData sendfileData = null;
+        private SendfileData sendfileData = null;
         private volatile long lastRead = System.currentTimeMillis();
         private volatile long lastWrite = lastRead;
 

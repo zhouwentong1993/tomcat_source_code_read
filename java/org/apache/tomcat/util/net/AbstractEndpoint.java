@@ -999,6 +999,7 @@ public abstract class AbstractEndpoint<S> {
             bind();
             bindState = BindState.BOUND_ON_START;
         }
+        // 调用结束后，基本的 nio 服务器就启动了
         startInternal();
     }
 
