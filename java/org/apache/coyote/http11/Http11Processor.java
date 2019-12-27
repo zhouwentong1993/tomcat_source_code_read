@@ -662,6 +662,8 @@ public class Http11Processor extends AbstractProcessor {
 
 
     // todo 这里是处理 HTTP 协议的地方！
+    // 解析 HTTP 协议，包括头数据等，没什么复杂的，把数据从 channel 读取到 buffer 中，然后对数据进行解析。
+    // 没有必要把事件花在这些东西身上。
     @Override
     public SocketState service(SocketWrapperBase<?> socketWrapper)
         throws IOException {
