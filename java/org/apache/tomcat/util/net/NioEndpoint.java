@@ -421,6 +421,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             socketProperties.setProperties(sock);
 
             // 该类是用来装饰 Channel 的，将 SocketChannel 又加装了一层。
+            // 就为了对象重用，搞一个这个
             NioChannel channel = nioChannels.pop();
             if (channel == null) {
                 SocketBufferHandler bufhandler = new SocketBufferHandler(
@@ -654,6 +655,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                             //we are registering the key to start with, reset the fairness counter.
                             int ops = key.interestOps() | interestOps;
                             socketWrapper.interestOps(ops);
+                            // todo 这方法是干嘛用的
                             key.interestOps(ops);
                         } else {
                             socket.getPoller().cancelledKey(key);
@@ -717,6 +719,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
         // 在事件队列里面添加一个事件
         private void addEvent(PollerEvent event) {
             events.offer(event);
+            // 如果没有可用的 Selector，wakeup 解除阻塞，说明来活了
             if (wakeupCounter.incrementAndGet() == 0) {
                 selector.wakeup();
             }
@@ -753,6 +756,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             boolean hasEvent = false;
 
             PollerEvent pe = null;
+            // 在这儿正常情况下是能获取到事件的，因为在唤醒 selector 之前，是有事件加入的。
             while ((pe = events.poll()) != null) {
                 hasEvent = true;
                 try {
@@ -904,6 +908,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         keyCount > 0 ? selector.selectedKeys().iterator() : null;
                 // Walk through the collection of ready keys and dispatch
                 // any active event.
+                // NIO 流程，分发请求
                 while (iterator != null && iterator.hasNext()) {
                     System.out.println("Poller.run");
                     SelectionKey sk = iterator.next();
@@ -914,6 +919,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         iterator.remove();
                     } else {
                         iterator.remove();
+                        // 准备处理事件
                         processKey(sk, attachment);
                     }
                 }//while
@@ -931,7 +937,9 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 if (close) {
                     cancelledKey(sk);
                 } else if (sk.isValid() && attachment != null) {
+                    // 处理读写请求
                     if (sk.isReadable() || sk.isWritable()) {
+                        // 如果是零拷贝，Sendfile，调用 FileChannel.sendFile();
                         if (attachment.getSendfileData() != null) {
                             processSendfile(sk, attachment, false);
                         } else {
@@ -939,7 +947,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                             boolean closeSocket = false;
                             // Read goes before write
                             if (sk.isReadable()) {
-                                // 在这里也处理请求
+                                // 处理读请求
                                 if (!processSocket(attachment, SocketEvent.OPEN_READ, true)) {
                                     closeSocket = true;
                                 }
@@ -1580,6 +1588,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                             // if the handshake failed.
                             handshake = -1;
                         } else {
+                            //
                             handshake = socket.handshake(key.isReadable(), key.isWritable());
                             // The handshake process reads/writes from/to the
                             // socket. status may therefore be OPEN_WRITE once

@@ -661,6 +661,7 @@ public class Http11Processor extends AbstractProcessor {
     }
 
 
+    // todo 这里是处理 HTTP 协议的地方！
     @Override
     public SocketState service(SocketWrapperBase<?> socketWrapper)
         throws IOException {

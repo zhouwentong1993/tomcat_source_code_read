@@ -821,7 +821,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                             processor = upgradeProtocol.getProcessor(
                                     wrapper, getProtocol().getAdapter());
                         } else if (negotiatedProtocol.equals("http/1.1")) {
-//                            System.out.println("this request based on http1.1");
+                            System.out.println("this request based on http1.1");
                             // Explicitly negotiated the default protocol.
                             // Obtain a processor below.
                         } else {
@@ -1160,7 +1160,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
         @Override
         public boolean push(Processor processor) {
             int cacheSize = handler.getProtocol().getProcessorCache();
-            boolean offer = cacheSize == -1 ? true : size.get() < cacheSize;
+            boolean offer = cacheSize == -1 || size.get() < cacheSize;
             //avoid over growing our cache or add after we have stopped
             boolean result = false;
             if (offer) {
