@@ -154,7 +154,7 @@ public class ThreadPoolExecutor extends java.util.concurrent.ThreadPoolExecutor 
      * thread, at the discretion of the <tt>Executor</tt> implementation.
      * If no threads are available, it will be added to the work queue.
      * If the work queue is full, the system will wait for the specified
-     * time and it throw a RejectedExecutionException if the queue is still
+     * time, and it throws a RejectedExecutionException if the queue is still
      * full after that.
      *
      * @param command the runnable task
