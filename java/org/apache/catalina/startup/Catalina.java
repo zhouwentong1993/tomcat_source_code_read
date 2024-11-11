@@ -538,6 +538,8 @@ public class Catalina {
 
     // 问题：Digester 在这里有什么作用？
     // 回答：初始化 Catalina 内部的类，通过读取并解析 server.xml，
+    // 非核心流程
+    // 将 server.xml 文件映射成要配置的类。
     public void load() {
 
         long t1 = System.nanoTime();
@@ -665,9 +667,17 @@ public class Catalina {
     /**
      * Start a new server instance.
      */
+    // 创建并开启一个 Server
     public void start() {
 
         if (getServer() == null) {
+            // 初始化一个 Server 所需要的元素，基本上就是 server.xml 文件里面提到的元素。
+//            org.apache.catalina.core.StandardServer、
+//            org.apache.catalina.core.StandardService、
+//            org.apache.catalina.connector.Connector、
+//            org.apache.catalina.core.StandardEngine、
+//            org.apache.catalina.core.StandardHost、
+//            org.apache.catalina.core.StandardContext
             load();
         }
 

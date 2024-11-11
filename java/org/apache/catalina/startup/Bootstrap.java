@@ -16,6 +16,15 @@
  */
 package org.apache.catalina.startup;
 
+import org.apache.catalina.Globals;
+import org.apache.catalina.security.SecurityClassLoad;
+import org.apache.catalina.startup.ClassLoaderFactory.Repository;
+import org.apache.catalina.startup.ClassLoaderFactory.RepositoryType;
+import org.apache.jasper.runtime.JspFactoryImpl;
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
+
+import javax.servlet.jsp.JspFactory;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -26,16 +35,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.catalina.Globals;
-import org.apache.catalina.security.SecurityClassLoad;
-import org.apache.catalina.startup.ClassLoaderFactory.Repository;
-import org.apache.catalina.startup.ClassLoaderFactory.RepositoryType;
-import org.apache.jasper.runtime.JspFactoryImpl;
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
-
-import javax.servlet.jsp.JspFactory;
 
 
 /**
@@ -167,7 +166,7 @@ public final class Bootstrap {
 
         String value = CatalinaProperties.getProperty(name + ".loader");
         // 这代码习惯就比较好
-        if ((value == null) || (value.equals("")))
+        if ((value == null) || (value.isEmpty()))
             return parent;
 
         value = replace(value);
@@ -267,9 +266,11 @@ public final class Bootstrap {
         SecurityClassLoad.securityClassLoad(catalinaLoader);
 
         // Load our startup class and call its process() method
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("Loading startup class");
+        }
         // 设置 catalina 相关属性
+        // Catalina 看起来是一个配置相关的类，像是一个引导的类。
         Class<?> startupClass =
             catalinaLoader.loadClass
             ("org.apache.catalina.startup.Catalina");
