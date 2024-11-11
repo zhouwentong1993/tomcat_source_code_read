@@ -16,6 +16,17 @@
  */
 package org.apache.tomcat.util.net;
 
+import org.apache.juli.logging.Log;
+import org.apache.juli.logging.LogFactory;
+import org.apache.tomcat.util.ExceptionUtils;
+import org.apache.tomcat.util.IntrospectionUtils;
+import org.apache.tomcat.util.collections.SynchronizedQueue;
+import org.apache.tomcat.util.collections.SynchronizedStack;
+import org.apache.tomcat.util.net.AbstractEndpoint.Handler.SocketState;
+import org.apache.tomcat.util.net.jsse.JSSESupport;
+
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLSession;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,34 +36,13 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.nio.channels.CancelledKeyException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.NetworkChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.*;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLSession;
-
-import org.apache.jasper.tagplugins.jstl.core.If;
-import org.apache.jasper.tagplugins.jstl.core.Otherwise;
-import org.apache.juli.logging.Log;
-import org.apache.juli.logging.LogFactory;
-import org.apache.tomcat.util.ExceptionUtils;
-import org.apache.tomcat.util.IntrospectionUtils;
-import org.apache.tomcat.util.collections.SynchronizedQueue;
-import org.apache.tomcat.util.collections.SynchronizedStack;
-import org.apache.tomcat.util.net.AbstractEndpoint.Handler.SocketState;
-import org.apache.tomcat.util.net.jsse.JSSESupport;
 
 /**
  * NIO tailored thread pool, providing the following services:
@@ -246,7 +236,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             //minimum one poller thread
             pollerThreadCount = 1;
         }
-        // 设置启停
+        // 设置启停，当 pollerThread 到一定程度，就停止
         setStopLatch(new CountDownLatch(pollerThreadCount));
 
         // Initialize SSL if needed
@@ -287,12 +277,15 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             }
 
             // 初始化连接数控制阀门，默认最大连接数 10000，过一个少一个，出一个多一个
+            // 这个是控制正在接受的请求的吗？TODO
+            // 就是最大连接数，此时 Tomcat 正在处理的连接数。
             initializeConnectionLatch();
 
             // Start poller threads
             // Poller 可以直接执行任务，也是调用了 Process
             // Poller 就是 Selector，是 Reactor 模式中的分发器，第一个接收到请求的地方。
             // todo 那么在 init 方法调用时启动的 Selector 是干嘛的呢？
+            // 初始化 Poller 线程
             pollers = new Poller[getPollerThreadCount()];
             for (int i = 0; i < pollers.length; i++) {
                 pollers[i] = new Poller();
@@ -518,6 +511,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                         // or an I/O error occurs.
 //                        System.out.println(Thread.currentThread().getName() + "start");
                         System.out.println("Acceptor.run");
+                        // accept 从全连接队列中获取 SocketChannel
                         socket = serverSock.accept();
 //                        System.out.println(Thread.currentThread().getName() + "end");
                     } catch (IOException ioe) {
@@ -761,6 +755,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 hasEvent = true;
                 try {
                     // 执行事件
+                    // 直接调用 run 方法
                     pe.run();
                     pe.reset();
                     if (running && !paused) {
